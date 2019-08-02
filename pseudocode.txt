@@ -1,0 +1,91 @@
+Minesweeper
+
+default page will be beginner mode (8 x 8 gridded divs)
+will have intermediate mode and expert mode options that can be set in preferences
+will have preferences tab at the top
+    when clicked, board will hide and preferences page will show up (toggle method?)
+    you can change game board size with mode choices using the radio input elements.
+    Mode choices will have a default number of mines
+    you can also change number of mines with a number input box
+    there will be a red reset board button and a green resume playing button
+        resume will be pretty easy because it will basically just ignore whatever was inputted in prefs ...and show the board again
+        the reset board button will re-render a new board of specified size and (optional mines)
+        (for usability, I will also add an x button to the top right corner which will behave the same as  ..the resume playing button)
+
+help tab with gameplay objectives and hints will be added if I have time 
+
+going to lean heavily on original design for the structure of the game elements, 
+    will add my own styling after I get the javascript to work...
+
+top of board will have:
+    mines left count
+    smiley face that will change based on win-state
+        smile if no winner or loser yet
+        sunglasses if player wins
+        X'ed eyes if player loses
+    seconds ticker
+
+**************
+JS pseudocode:
+constants
+    colors that will be applied based on the board number
+    number of rows and columns for each mode
+    default number of mines for each mode
+
+state variables
+    mode
+    number of mines placed in board
+    number of mines unmarked
+    playerStatus won/lost/playing
+    time displayed on ticker
+    board array values = 0, or 1-8, or mine (don't know what to use for this value yet)
+    board tiles revealed/hidden
+
+cache (will add as necessary once i start coding)
+preferences tab
+    mode buttons
+    set num mines input
+    reset, resume buttons
+mines left count viewer
+smiley
+time ticker
+gameboard
+
+JS:
+initialize board
+    beginner mode
+    number of mines based on default
+    set up array with 
+have event listeners listening for clicks (will be specific to right or left click!)
+    preferences button
+    reset button
+        get mode
+        get number of mines
+        set up array with size based on mode
+        randomly throw mines into the array
+        calculate numbers in array based on where the mines are in array
+        render board based on state variables
+will start the timer after first successful click on board
+render based on type of click,
+    left-click will basically rerender the clicked div from back of tile to number/blank space
+    have logic to flip connected blank tiles if left-clicked
+check winner
+display winner stuff
+
+If I have time...
+replay button after gameplay has finished
+explosion sound when mine is hit
+    ripple animation when mine is hit
+    scanner animation when player wins
+help tab
+X button on preferences tab
+
+
+
+
+
+****** questions ******
+How do i rerender the ticker for each second that has elapsed? (not based on clicks or anything to re-render).
+-can you set a timer that runs inside javascript?
+
+
