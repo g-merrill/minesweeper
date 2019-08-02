@@ -12,18 +12,19 @@ const COLORS = {
 const offset = 8;
 
 class Tile {
-    constructor(location, status) {
+    constructor(location) {
         // references both the dom id and the array id
         this.location = location;
-        this.status = status;
+        this.status = 'hidden';
     }
     getAllValidNeighbors() {
+        // based on this tile's location,
         // function that returns array of locations of all valid neighboring tiles (valid meaning: they should be revealed if blank / checked if a number tile)
     }
 }
-class blank extends Tile {
-    constructor(location, status) {
-        super(location, status);
+class Blank extends Tile {
+    constructor(location) {
+        super(location);
         this.type = 'blank';
     }
     // any special functions needed by blank tiles
@@ -31,37 +32,24 @@ class blank extends Tile {
         // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
     }
 }
-class number extends Tile {
-    constructor(location, status) {
-        super(location, status);
+class Number extends Tile {
+    constructor(location) {
+        super(location);
         this.type = 'number';
     }
     // any special functions needed by number tiles
     getMineNeighbors(){
         // function that returns the number of mines this tile is touching
+        // can use constructor.name = Mine to check
     }
 }
-class mine extends Tile {
-    constructor(location, status) {
-        super(location, status);
+class Mine extends Tile {
+    constructor(location) {
+        super(location);
         this.type = 'mine';
     }
     // any special functions needed by mine tiles
 }
-
-// ******* SANDBOX ********
-let tiles = [];
-
-
-
-
-
-// ******************
-
-
-// const tile = {
-//     tileStatus: 'hidden'
-// };
 
 
 // state variables
@@ -94,6 +82,10 @@ document.getElementById('board').addEventListener('click', handleClick);
 
 
 // init
+init();
+function init() {
+    setMines();
+}
 
 // render
 function render(id) {
@@ -111,6 +103,7 @@ function render(id) {
         playerStatus = 'lost';
         return;
     }
+    // **************** NEED TO FIX ERRORS HERE **********
     // write number inside div using innerHTML
     if (board[id] === 0) {
         // // change background of all touching tiles around blank tiles no matter the board value
@@ -154,11 +147,13 @@ function render(id) {
             }
         }
         
+        
         // // check up, check down, check left, check right for blanks
         // // if blank is found, switch to blank and continue to re-render all touching tiles around the new blank tile and check up, check down, check left, check right for blanks, until no more blanks left
         // // if no blank tiles, end the switch-checking function
         return;
     }
+    // **************** NEED TO FIX ERRORS HERE **********
     let colorIndex = board[id].toString();
     tile.style.color = COLORS[colorIndex];
     tile.innerHTML = `${board[id]}`;
@@ -169,7 +164,8 @@ function handleClick(evt) {
     render(id);
 };
 
-function mineLocations(numberOfMines) {
+// Mines! 
+function getMineLocations() {
     let locationOfMines = Array(numberOfMines).fill('to be filled');
     let prevMineLocations = [];
     locationOfMines.forEach((val, idx) => {
@@ -183,4 +179,27 @@ function mineLocations(numberOfMines) {
     });
     return locationOfMines;
 }
-console.log(mineLocations(numberOfMines));
+function createMineObjects() {
+    let mineObjects = [];
+    let mineArray = getMineLocations();
+    mineArray.forEach(location => {
+        let mineTile = new Mine(location);
+        mineObjects.push(mineTile);
+    });
+    return mineObjects;
+}
+function setMines() {
+    let mines = createMineObjects();
+    mines.forEach(function(mineObj) {
+        let id = mineObj.location;
+        // change board value to mine
+        board[id] = 'mine';
+    });
+}
+
+// ******* SANDBOX ********
+
+console.log(board);
+
+
+// ******************
