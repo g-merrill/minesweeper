@@ -50,11 +50,131 @@ class Number extends Tile {
     constructor(location) {
         super(location);
         this.type = 'number';
+        this.value = this.getMineNeighbors(); // need to calculate this based on neighboring mines
+        // any special functions needed by number tiles
     }
-    // any special functions needed by number tiles
-    getMineNeighbors(){
+    getMineNeighbors() {
         // function that returns the number of mines this tile is touching
         // can use constructor.name = Mine to check
+        let currentTileLocation = this.location;
+        let mineCount = 0;
+        // at this point, only the mines are objects in the board array, so we will take advantage of that using typeof!
+        // check corner tiles
+        let corner = false;
+        let border = false;
+        // TL corner
+        if (currentTileLocation === 0) {
+            corner = true;
+            let toCheck = [
+                (currentTileLocation + 1), 
+                (currentTileLocation + offset),
+                (currentTileLocation + offset + 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // TR corner
+        if (currentTileLocation === (offset - 1)) {
+            corner = true;
+            let toCheck = [
+                (currentTileLocation - 1), 
+                (currentTileLocation + offset),
+                (currentTileLocation + offset - 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // BL corner
+        if (currentTileLocation === (offset * (offset - 1))) {
+            corner = true;
+            let toCheck = [
+                (currentTileLocation + 1), 
+                (currentTileLocation - offset),
+                (currentTileLocation - offset + 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // BR corner
+        if (currentTileLocation === (offset * offset - 1)) {
+            corner = true;
+            let toCheck = [
+                (currentTileLocation - 1), 
+                (currentTileLocation - offset),
+                (currentTileLocation - offset - 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // check border tiles
+            // remember to add !corner
+        // top row
+        if (!corner && currentTileLocation < offset) {
+            border = true;
+            let toCheck = [
+                (currentTileLocation - 1),
+                (currentTileLocation + 1),
+                (currentTileLocation + offset - 1),
+                (currentTileLocation + offset),
+                (currentTileLocation + offset + 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // left row
+        if (!corner && currentTileLocation % offset === 0) {
+            border = true;
+            let toCheck = [
+                (currentTileLocation - offset),
+                (currentTileLocation - offset + 1),
+                (currentTileLocation + 1),
+                (currentTileLocation + offset),
+                (currentTileLocation + offset + 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // right row
+        if (!corner && (currentTileLocation + 1) % offset === 0) {
+            border = true;
+            let toCheck = [
+                (currentTileLocation - offset - 1),
+                (currentTileLocation - offset),
+                (currentTileLocation - 1),
+                (currentTileLocation + offset - 1),
+                (currentTileLocation + offset)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // bottom row
+        if (!corner && currentTileLocation > (offset * (offset - 1))) {
+            border = true;
+            let toCheck = [
+                (currentTileLocation - offset - 1),
+                (currentTileLocation - offset),
+                (currentTileLocation - offset + 1),
+                (currentTileLocation - 1),
+                (currentTileLocation + 1)
+            ];
+            mineCount = checkForMines(toCheck);
+        }
+        // check everything else
+        if (!corner && !border) {
+            // check mines above
+            let checkAbove = [
+                (currentTileLocation - offset - 1),
+                (currentTileLocation - offset),
+                (currentTileLocation - offset + 1)
+            ];
+            // check mines to the side
+            let checkSides = [
+                (currentTileLocation - 1),
+                (currentTileLocation + 1)
+            ];
+            // check mines below
+            let checkBelow = [
+                (currentTileLocation + offset - 1),
+                (currentTileLocation + offset),
+                (currentTileLocation + offset + 1)
+            ];
+            mineCount = checkForMines(checkAbove) + checkForMines(checkSides) + checkForMines(checkBelow);
+        }
+        console.log(mineCount);
+        return mineCount;
     }
 }
 class Mine extends Tile {
@@ -105,11 +225,16 @@ function init() {
     numberOfMines = DEFAULTS.beginner.numMines;
     setMines();
     // need to call a calcNumbers function based on board's mine locations
-    calcNumbers();
+    setNumbers();
+    setBlanks();
 }
-function calcNumbers() {
+function setNumbers() {
 
 }
+function setBlanks() {
+
+}
+
 // render
 function render(id) {
         // change tile's background colors based on board number
@@ -223,9 +348,39 @@ function setMines() {
     });
 }
 
+
+function checkForMines(toCheckArray) {
+    let minesNearby = 0;
+    toCheckArray.forEach((val) => {
+        if (board[val]) {       // returns true if mine object, false if 0
+            minesNearby += 1;
+        }
+    });
+    return minesNearby;
+}
+
 // ******* SANDBOX ********
 
 console.log(board);
+// class Number extends Tile {
+//     constructor(location) {
+//         super(location);
+//         this.type = 'number';
+//         this.value = getMineNeighbors(); // need to calculate this based on neighboring mines
+//     }
+//     // any special functions needed by number tiles
+//     getMineNeighbors(){
+//         // function that returns the number of mines this tile is touching
+//         // can use constructor.name = Mine to check
+//         return 5;
+//     }
+// }
+let numberTile = new Number(0); // XXX TEST!
+// for every board value that isnt an object yet, create number object for that location
+
+// replace all 0's with number objects
 
 
 // ******************
+
+
