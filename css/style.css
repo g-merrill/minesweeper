@@ -34,3 +34,6 @@ h1 {
 .tile>img {
     height: 90%;
 }
+#other-bombs {
+    opacity: 0.5;
+}

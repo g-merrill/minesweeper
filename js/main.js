@@ -1,15 +1,29 @@
 // constants
 const COLORS = {
-    '1' : 'blue',
-    '2' : 'green',
-    '3' : 'red',
-    '4' : 'purple',
-    '5' : 'maroon',
-    '6' : 'turquoise',
-    '7' : 'black',
-    '8' : 'gray'
+    1 : 'blue',
+    2 : 'green',
+    3 : 'red',
+    4 : 'purple',
+    5 : 'maroon',
+    6 : 'turquoise',
+    7 : 'black',
+    8 : 'gray'
 };
-const offset = 8;
+
+const DEFAULTS = {
+    beginner: {
+        offset: 8,
+        numMines: 10
+    },
+    intermediate: {
+        offset: 16,
+        numMines: 40
+    },
+    expert: {
+        offset: 24,
+        numMines: 99
+    }
+};
 
 class Tile {
     constructor(location) {
@@ -53,19 +67,7 @@ class Mine extends Tile {
 
 
 // state variables
-let board = [               // r
-     0,  0,  2, -1,  0,  0,  0,  0,  // 0
-     0,  0,  3,  3,  0,  0,  0,  0,  // 1
-     2,  3,  5, -1,  0,  0,  0,  0,  // 2
-    -1, -1, -1, -1,  0,  0,  0,  0,  // 3
-     0,  0,  0,  0,  0,  0,  0,  0,  // 4
-     0,  0,  0,  0,  0,  0,  0,  0,  // 5
-     0,  0,  0,  0,  0,  0,  0,  0,  // 6
-     0,  0,  0,  0,  0,  0,  0,  0,  // 7
-//c 0  1  2  3  4  5  6  7
-];
-let playerStatus = 'playing';  // won, lost, or playing
-let numberOfMines = 10;
+let board, offset, playerStatus, numberOfMines;
 
 // cached elements
 
@@ -84,23 +86,49 @@ document.getElementById('board').addEventListener('click', handleClick);
 // init
 init();
 function init() {
+    playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
+    // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
+    offset = DEFAULTS.beginner.offset;
+    // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
+    board = Array(offset * offset).fill(0);
+//     board = [                           // r
+//         0,  0,  2, -1,  0,  0,  0,  0,  // 0
+//         0,  0,  3,  3,  0,  0,  0,  0,  // 1
+//         2,  3,  5, -1,  0,  0,  0,  0,  // 2
+//        -1, -1, -1, -1,  0,  0,  0,  0,  // 3
+//         0,  0,  0,  0,  0,  0,  0,  0,  // 4
+//         0,  0,  0,  0,  0,  0,  0,  0,  // 5
+//         0,  0,  0,  0,  0,  0,  0,  0,  // 6
+//         0,  0,  0,  0,  0,  0,  0,  0,  // 7
+//  //  c  0   1   2   3   4   5   6   7
+//     ];
+    numberOfMines = DEFAULTS.beginner.numMines;
     setMines();
+    // need to call a calcNumbers function based on board's mine locations
+    calcNumbers();
 }
+function calcNumbers() {
 
+}
 // render
 function render(id) {
         // change tile's background colors based on board number
     let tile = document.getElementById(`${id}`);
     tile.style.backgroundColor = 'lightgray';
     // if bomb, render mine img
-    if (board[id] === -1) {
+    if (typeof board[id] === 'object' && board[id].type === 'mine') { //can remove check for object, once all tiles are set as objects
         tile.style.backgroundColor = 'red';
         tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
         console.log('YOU HIT A BOMB! GAME OVER');
-        // show location of all other hidden bombs
-        
+        // show location of all other hidden bombs (50% opacity)
+        board.forEach(function(boardObj) {
+            if (typeof boardObj === 'object' && boardObj.type === 'mine' && boardObj.location !== id) {
+                document.getElementById(`${boardObj.location}`).innerHTML = '<img id="other-bombs" src="images/mine-img.png" alt="mine">';
+            }
+        });
         // update playerStatus
         playerStatus = 'lost';
+        // (do later) stop timer, change smiley, offer a play-a-new-game button
         return;
     }
     // **************** NEED TO FIX ERRORS HERE **********
@@ -117,22 +145,20 @@ function render(id) {
         document.getElementById(`${id + offset + 1}`).style.backgroundColor = 'lightgray';
 
         // //  and display board value in divs of all touching tiles that have a board value !== 0
-        let i, indexValue, boardValue, colorIndex;
+        let i, indexValue, boardValue;
         for (i = -1; i <= 1; i++) {
             // render any numbers above blank tile
             if (board[id - offset + i] !== 0) {
                 indexValue = id - offset + i;
                 boardValue = board[indexValue];
-                colorIndex = boardValue.toString();
-                document.getElementById(`${indexValue}`).style.color = COLORS[colorIndex];
+                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
                 document.getElementById(`${indexValue}`).innerHTML = `${boardValue}`;
             }
             // render any numbers below blank tile
             if (board[id + offset + i] !== 0) {
                 indexValue = id + offset + i;
                 boardValue = board[indexValue];
-                colorIndex = boardValue.toString();
-                document.getElementById(`${indexValue}`).style.color = COLORS[colorIndex];
+                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
                 document.getElementById(`${indexValue}`).innerHTML = `${board[indexValue]}`;
             }
         }
@@ -141,8 +167,7 @@ function render(id) {
             if (board[id + i] !== 0) {
                 indexValue = id + i;
                 boardValue = board[indexValue];
-                colorIndex = boardValue.toString();
-                document.getElementById(`${indexValue}`).style.color = COLORS[colorIndex];
+                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
                 document.getElementById(`${id + i}`).innerHTML = `${board[id + i]}`;
             }
         }
@@ -154,13 +179,14 @@ function render(id) {
         return;
     }
     // **************** NEED TO FIX ERRORS HERE **********
-    let colorIndex = board[id].toString();
-    tile.style.color = COLORS[colorIndex];
+    tile.style.color = COLORS[board[id]];
     tile.innerHTML = `${board[id]}`;
+    // change any revealed tile object's status from hidden to revealed
 }
 function handleClick(evt) {
     if (playerStatus === 'lost') return;
     let id = parseInt(evt.target.id);
+    if (typeof board[id] === 'object' && board[id].status === 'revealed') return; //can remove check for object, once all tiles are set as objects
     render(id);
 };
 
@@ -193,7 +219,7 @@ function setMines() {
     mines.forEach(function(mineObj) {
         let id = mineObj.location;
         // change board value to mine
-        board[id] = 'mine';
+        board[id] = mineObj;
     });
 }
 
