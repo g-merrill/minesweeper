@@ -36,22 +36,21 @@ class Tile {
         // function that returns array of locations of all valid neighboring tiles (valid meaning: they should be revealed if blank / checked if a number tile)
     }
 }
-class Blank extends Tile {
+
+class Mine extends Tile {
     constructor(location) {
         super(location);
-        this.type = 'blank';
+        this.type = 'mine';
     }
-    // any special functions needed by blank tiles
-    getBlankNeighbors() {
-        // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
-    }
+    // any special functions needed by mine tiles
 }
+
 class Number extends Tile {
     constructor(location) {
         super(location);
-        this.type = 'number';
         this.value = this.getMineNeighbors(); // need to calculate this based on neighboring mines
         // any special functions needed by number tiles
+        this.type = 'number';
     }
     getMineNeighbors() {
         // function that returns the number of mines this tile is touching
@@ -77,8 +76,8 @@ class Number extends Tile {
             corner = true;
             let toCheck = [
                 (currentTileLocation - 1), 
-                (currentTileLocation + offset),
-                (currentTileLocation + offset - 1)
+                (currentTileLocation + offset - 1),
+                (currentTileLocation + offset)
             ];
             mineCount = checkForMines(toCheck);
         }
@@ -86,9 +85,9 @@ class Number extends Tile {
         if (currentTileLocation === (offset * (offset - 1))) {
             corner = true;
             let toCheck = [
-                (currentTileLocation + 1), 
                 (currentTileLocation - offset),
-                (currentTileLocation - offset + 1)
+                (currentTileLocation - offset + 1),
+                (currentTileLocation + 1)
             ];
             mineCount = checkForMines(toCheck);
         }
@@ -96,14 +95,13 @@ class Number extends Tile {
         if (currentTileLocation === (offset * offset - 1)) {
             corner = true;
             let toCheck = [
-                (currentTileLocation - 1), 
+                (currentTileLocation - offset - 1),
                 (currentTileLocation - offset),
-                (currentTileLocation - offset - 1)
+                (currentTileLocation - 1)
             ];
             mineCount = checkForMines(toCheck);
         }
         // check border tiles
-            // remember to add !corner
         // top row
         if (!corner && currentTileLocation < offset) {
             border = true;
@@ -152,6 +150,7 @@ class Number extends Tile {
             ];
             mineCount = checkForMines(toCheck);
         }
+        
         // check everything else
         if (!corner && !border) {
             // check mines above
@@ -173,17 +172,21 @@ class Number extends Tile {
             ];
             mineCount = checkForMines(checkAbove) + checkForMines(checkSides) + checkForMines(checkBelow);
         }
-        console.log(mineCount);
         return mineCount;
     }
 }
-class Mine extends Tile {
+class Blank extends Number {
     constructor(location) {
         super(location);
-        this.type = 'mine';
+        this.value = 0;
+        this.type = 'blank';
     }
-    // any special functions needed by mine tiles
+    // any special functions needed by blank tiles
+    getBlankNeighbors() {
+        // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
+    }
 }
+
 
 
 // state variables
@@ -351,34 +354,35 @@ function setMines() {
 
 function checkForMines(toCheckArray) {
     let minesNearby = 0;
-    toCheckArray.forEach((val) => {
-        if (board[val]) {       // returns true if mine object, false if 0
+    toCheckArray.forEach((location) => {
+        if (typeof board[location] === 'object' && board[location].type === 'mine') {
             minesNearby += 1;
         }
     });
     return minesNearby;
 }
 
+function setNumbers() {
+    board.forEach(function(val, idx) {
+        // for every board value that isnt a mine, create number object for that location
+        if (board[idx] === 0) {
+            board[idx] = new Number(idx);
+        }
+    });
+}
+
+function setBlanks() {
+    board.forEach(function(val, idx) {
+        // replace all Number.value === 0 objects with Blank objects
+        if (board[idx].type === 'number' && !board[idx].value) {
+            board[idx] = new Blank(idx);
+        }
+    });
+}
+
 // ******* SANDBOX ********
 
 console.log(board);
-// class Number extends Tile {
-//     constructor(location) {
-//         super(location);
-//         this.type = 'number';
-//         this.value = getMineNeighbors(); // need to calculate this based on neighboring mines
-//     }
-//     // any special functions needed by number tiles
-//     getMineNeighbors(){
-//         // function that returns the number of mines this tile is touching
-//         // can use constructor.name = Mine to check
-//         return 5;
-//     }
-// }
-let numberTile = new Number(0); // XXX TEST!
-// for every board value that isnt an object yet, create number object for that location
-
-// replace all 0's with number objects
 
 
 // ******************
