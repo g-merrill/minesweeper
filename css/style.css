@@ -10,10 +10,14 @@ body {
     align-items: center;
     height: 100vh;
 }
-
 h1 {
     font-size: calc(20px + 2vmin);
     margin: 1vh 0;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .nav-bar {
     display: flex;
@@ -21,22 +25,22 @@ h1 {
     width: 60vmin;
     margin: 1vh 0;
 }
-.preferences {
+.settings {
     background-color: black;
     border-radius: 2vmin;
-    padding: 1vmin 3vmin;
+    padding: 2vmin 3vmin;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.pref-arrow {
-    border-top: 2vmin solid white;
-    border-left: 2vmin solid transparent;
-    border-right: 2vmin solid transparent;
+.settings-arrow {
+    border-top: calc(5px + 0.5vmin) solid lightgray;
+    border-left: calc(5px + 0.5vmin) solid transparent;
+    border-right: calc(5px + 0.5vmin) solid transparent;
 }
-.pref-text {
-    color: white;
-    margin: 0 0 0 2vmin;
+.settings-text {
+    color: lightgray;
+    margin: 0 0 0 3vmin;
     font-size: calc(15px + 1vmin);
 }
 .status-bar {
