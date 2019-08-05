@@ -199,9 +199,6 @@ document.getElementById('board').addEventListener('click', handleClick);
 
 // functions
 
-// this function will do something whenever you click a div in the board
-
-
 // init
 init();
 function init() {
@@ -216,6 +213,7 @@ function init() {
     setBlanks();
     renderTest();
 }
+// handleClick gets location of click, parses, returns before render if necessary, and passes to render function
 function handleClick(evt) {
     if (playerStatus === 'lost') return;
     let id = parseInt(evt.target.id);
@@ -224,13 +222,13 @@ function handleClick(evt) {
 }
 // render
 function render(id) {
-    // change any clicked tile object's status from hidden to revealed
-    board[id].status = 'revealed';
     // change tile's background color when clicked
     let tile = document.getElementById(`${id}`);
     tile.style.backgroundColor = 'lightgray';
     // if bomb, render mine img
     if (board[id].type === 'mine') {
+        // change the clicked tile object's status from hidden to revealed
+        board[id].status = 'revealed';
         tile.style.backgroundColor = 'red';
         tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
         console.log('YOU HIT A BOMB! GAME OVER');
@@ -253,10 +251,14 @@ function render(id) {
         let blanksAlreadyRendered = [];
         // while there are blanks that need rendering, continue while loop
         while (blanksNeedingRendering.length) {
+            let newBlank = blanksNeedingRendering[0];
+            console.log(newBlank);
+            // change the clicked tile object's status from hidden to revealed
+            board[newBlank].status = 'revealed';
+            renderBlank(newBlank);
+            // copy whatever was rendered from blanksNeedingRendering to blanksAlreadyRendered
+            blanksAlreadyRendered.push(newBlank);
             blanksNeedingRendering.forEach(function(blankLoc) {
-                renderBlank(blankLoc);
-                // copy whatever was rendered from blanksNeedingRendering to blanksAlreadyRendered
-                blanksAlreadyRendered.push(blankLoc);
                 // get all valid blank neighbors of rendered tile
                 // filter out any blanks that are in blanksAlreadyRendered
                 let unrenderedBlankNeighbors = board[blankLoc].blankNeighbors;
@@ -271,79 +273,42 @@ function render(id) {
                 });
                 unrenderedBlankNeighbors.forEach(function(blankLoc) {
                     // get all valid neighbors of these blanks
-                    console.log(blankLoc);
                     let newNeighbors = board[blankLoc].getValidNeighbors();
 
                     // if there are no hidden tiles around the blank, no need to call renderBlank for it
-                    let checkForHidden = false;
-                    for (let i = 0; i < newNeighbors.length; i++) {
-                        let location = newNeighbors[i];
-                        if (board[location].status === 'hidden') {
-                            checkForHidden = true;
-                            break;
-                        }
-                    }
-                    console.log(checkForHidden); // will return true if condition is true, as expected
+                    // let checkForHidden = false;
+                    // for (let i = 0; i < newNeighbors.length; i++) {
+                    //     let location = newNeighbors[i];
+                    //     if (board[location].status === 'hidden') {
+                    //         checkForHidden = true;
+                    //         break;
+                    //     }
+                    // }
+                    // console.log(checkForHidden); // will return true if condition is true, as expected
 
-                    // doesn't work
-                    // let checkForHidden1 = newNeighbors.some(function(location) {
-                    //     board[location].status === 'hidden';
-                    // });
-                    // console.log(checkForHidden1); // always returns false.  ???
-                    // doesn't work
+                    let checkForHidden = newNeighbors.some(function(location) {
+                        return board[location].status === 'hidden';
+                    });
 
                     // add to blanksNeedingRendering array to be rendered in the next while loop iteration
-                    if (checkForHidden) {
+                    if (
+                        checkForHidden && 
+                        // AND not already in blanksNeedingRendering (don't want to add a duplicate)
+                        !(blanksNeedingRendering.some(value => value === blankLoc))
+                        ) {
                         blanksNeedingRendering.push(blankLoc);
                     }
                 });
             });
-            // get values from blanksAlreadyRendered and remove them from blanksNeedingRendering array
-            blanksAlreadyRendered.forEach(function(value) {
-                let removalIdx = blanksNeedingRendering.indexOf(value);
-                blanksNeedingRendering.splice(removalIdx, 1);
-            });
+            // after doing all the stuff, remove current value from blanksNeedingRendering array
+            blanksNeedingRendering.shift();
             console.log(blanksNeedingRendering);            
         }
-
-        // for each addtnl blank, call renderblank
-        // stop when no addtnl blanks can be found
-
-        // // or I can check for any valid neighbors that are blank
-        // //     then check if any of their valid neighbors are hidden
-        // //         if so, fire off a render for that blank location
-        // renderBlank(id);
-        // let blanks = board[id].getValidNeighbors().filter(function(location) {
-        //     return board[location].type === 'blank';
-        // });
-        // blanks.forEach(function(blank) {
-        //     let moreNeighbors = board[blank].getValidNeighbors();
-        //     let needRender = moreNeighbors.some(function(location) {
-        //         return board[location].status === 'hidden';
-        //     });
-        //     if (needRender) renderBlank(blank);
-        // });
-        // // moreNeighbors;
-        // console.log(blanks);
-
-
-        // *** repeating render function ***
-        // addtnlBlanks.forEach(function(location) {
-        //     renderBlank(location);
-        // });
-        // rerun renderblank for that location
-
-        // *** repeating render function ***
-        
-        // board[id].blankNeighbors.length > 0 ?
-
-        
-        // // check up, check down, check left, check right for blanks
-        // // if blank is found, switch to blank and continue to re-render all touching tiles around the new blank tile and check up, check down, check left, check right for blanks, until no more blanks left
-        // // if no blank tiles, end the switch-checking function
         return;
     }
     // otherwise, write number inside div using innerHTML
+    // change the clicked tile object's status from hidden to revealed
+    board[id].status = 'revealed';
     tile.style.color = COLORS[board[id].value];
     tile.innerHTML = `${board[id].value}`;
     return;
@@ -416,7 +381,7 @@ function renderTest() {
     let tiles = document.querySelectorAll('.tile');
     tiles.forEach(function(tile, idx) {
         tile.innerHTML = (board[idx].type === 'mine') ? 
-            '<img src="images/mine-img.png" alt="mine">' : 
+            `<img id="${idx}" src="images/mine-img.png" alt="mine">` : 
             `${board[idx].value}`;
         if (board[idx].type === 'mine') {
             tile.style.backgroundColor = 'red';
