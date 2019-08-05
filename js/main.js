@@ -203,31 +203,35 @@ function handleClickRight(evt) {
         console.log('cannot mark a revealed tile!');
         return false;
     }
-    if (board[id].flagged === 'no') {
-        renderFlag(id);
-        console.log('flagged!');
-        return false;
-    } else if (board[id].flagged === 'yes') { // need to define a flagged property on all tiles - 'yes', 'no', and 'unsure'
-        renderUnsure(id);
-        console.log('marked unsure!');
-        return false;
-    } else {
-        renderRemoveMark(id);
-        console.log('mark removed!');
-        return false;
+    switch (board[id].flagged) {
+        case 'no':
+            renderFlag(id);
+            console.log('flagged!');
+            break;
+        case 'yes':
+            renderUnsure(id);
+            console.log('marked unsure!');
+            break;
+        default:
+            renderRemoveMark(id);
+            console.log('mark removed!');
     }
+    return false;
 }
 function renderFlag(id) {
-    // XXX
+    document.getElementById(`${id}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
     // update flagged property
+    board[id].flagged = 'yes';
 }
 function renderUnsure(id) {
-    
+    document.getElementById(`${id}`).innerHTML = '?';
     // update flagged property
+    board[id].flagged = 'unsure';
 }
 function renderRemoveMark(id) {
-    
+    document.getElementById(`${id}`).innerHTML = '';
     // update flagged property
+    board[id].flagged = 'no';
 }
 
 
@@ -251,7 +255,7 @@ function init() {
 // handleClickLeft gets location of click, parses, returns before render if necessary, and passes to render function
 function handleClickLeft(evt) {
     if (playerStatus === 'lost') return;
-    let id = evt.target.id;
+    let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
     if (board[id].status === 'revealed') return;
     render(id);
 }
@@ -279,12 +283,12 @@ function renderMine(id, tile) {
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'revealed';
     tile.style.backgroundColor = 'red';
-    tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
+    tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     console.log('YOU HIT A BOMB! GAME OVER');
     // show location of all other hidden bombs (50% opacity)
     board.forEach( boardObj => {
         if (boardObj.type === 'mine' && boardObj.location !== id) {
-            document.getElementById(`${boardObj.location}`).innerHTML = '<img id="other-bombs" src="images/mine-img.png" alt="mine">';
+            document.getElementById(`${boardObj.location}`).innerHTML = '<img class="mine-img other-bombs" src="images/mine-img.png" alt="mine">';
         }
     });
     // update playerStatus

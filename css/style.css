@@ -32,8 +32,14 @@ h1 {
     font-size: 7vmin;
 }
 .tile>img {
+    pointer-events: none;
+}
+.mine-img {
     height: 90%;
 }
-#other-bombs {
+.other-bombs {
     opacity: 0.5;
+}
+.flag-img {
+    height: 70%;
 }
