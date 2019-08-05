@@ -27,13 +27,9 @@ const DEFAULTS = {
 
 class Tile {
     constructor(location) {
-        // references both the dom id and the array id
+        // location references both the dom id and the array id
         this.location = location;
         this.status = 'hidden';
-    }
-    getAllValidNeighbors() {
-        // based on this tile's location,
-        // function that returns array of locations of all valid neighboring tiles (valid meaning: they should be revealed if blank / checked if a number tile)
     }
 }
 
@@ -42,148 +38,148 @@ class Mine extends Tile {
         super(location);
         this.type = 'mine';
     }
-    // any special functions needed by mine tiles
 }
 
 class Number extends Tile {
     constructor(location) {
         super(location);
-        this.value = this.getMineNeighbors(); // need to calculate this based on neighboring mines
-        // any special functions needed by number tiles
+        this.value = this.checkForMines(this.getValidNeighbors());
         this.type = 'number';
     }
-    getMineNeighbors() {
-        // function that returns the number of mines this tile is touching
-        // can use constructor.name = Mine to check
-        let currentTileLocation = this.location;
-        let mineCount = 0;
-        // at this point, only the mines are objects in the board array, so we will take advantage of that using typeof!
-        // check corner tiles
+    getValidNeighbors() {
+        // function that returns the actual number of tiles this tile is touching
+        let tileLocation = this.location;
+        let validNeighbors;
+        // tiles that need specialized neighbor algorithms:
         let corner = false;
         let border = false;
+        // get neighbors of corner tiles
         // TL corner
-        if (currentTileLocation === 0) {
+        if (tileLocation === 0) {
             corner = true;
-            let toCheck = [
-                (currentTileLocation + 1), 
-                (currentTileLocation + offset),
-                (currentTileLocation + offset + 1)
+            validNeighbors = [
+                (tileLocation + 1), 
+                (tileLocation + offset),
+                (tileLocation + offset + 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // TR corner
-        if (currentTileLocation === (offset - 1)) {
+        if (tileLocation === (offset - 1)) {
             corner = true;
-            let toCheck = [
-                (currentTileLocation - 1), 
-                (currentTileLocation + offset - 1),
-                (currentTileLocation + offset)
+            validNeighbors = [
+                (tileLocation - 1), 
+                (tileLocation + offset - 1),
+                (tileLocation + offset)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // BL corner
-        if (currentTileLocation === (offset * (offset - 1))) {
+        if (tileLocation === (offset * (offset - 1))) {
             corner = true;
-            let toCheck = [
-                (currentTileLocation - offset),
-                (currentTileLocation - offset + 1),
-                (currentTileLocation + 1)
+            validNeighbors = [
+                (tileLocation - offset),
+                (tileLocation - offset + 1),
+                (tileLocation + 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // BR corner
-        if (currentTileLocation === (offset * offset - 1)) {
+        if (tileLocation === (offset * offset - 1)) {
             corner = true;
-            let toCheck = [
-                (currentTileLocation - offset - 1),
-                (currentTileLocation - offset),
-                (currentTileLocation - 1)
+            validNeighbors = [
+                (tileLocation - offset - 1),
+                (tileLocation - offset),
+                (tileLocation - 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
-        // check border tiles
+        // get neighbors of border tiles
         // top row
-        if (!corner && currentTileLocation < offset) {
+        if (!corner && tileLocation < offset) {
             border = true;
-            let toCheck = [
-                (currentTileLocation - 1),
-                (currentTileLocation + 1),
-                (currentTileLocation + offset - 1),
-                (currentTileLocation + offset),
-                (currentTileLocation + offset + 1)
+            validNeighbors = [
+                (tileLocation - 1),
+                (tileLocation + 1),
+                (tileLocation + offset - 1),
+                (tileLocation + offset),
+                (tileLocation + offset + 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // left row
-        if (!corner && currentTileLocation % offset === 0) {
+        if (!corner && tileLocation % offset === 0) {
             border = true;
-            let toCheck = [
-                (currentTileLocation - offset),
-                (currentTileLocation - offset + 1),
-                (currentTileLocation + 1),
-                (currentTileLocation + offset),
-                (currentTileLocation + offset + 1)
+            validNeighbors = [
+                (tileLocation - offset),
+                (tileLocation - offset + 1),
+                (tileLocation + 1),
+                (tileLocation + offset),
+                (tileLocation + offset + 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // right row
-        if (!corner && (currentTileLocation + 1) % offset === 0) {
+        if (!corner && (tileLocation + 1) % offset === 0) {
             border = true;
-            let toCheck = [
-                (currentTileLocation - offset - 1),
-                (currentTileLocation - offset),
-                (currentTileLocation - 1),
-                (currentTileLocation + offset - 1),
-                (currentTileLocation + offset)
+            validNeighbors = [
+                (tileLocation - offset - 1),
+                (tileLocation - offset),
+                (tileLocation - 1),
+                (tileLocation + offset - 1),
+                (tileLocation + offset)
             ];
-            mineCount = checkForMines(toCheck);
         }
         // bottom row
-        if (!corner && currentTileLocation > (offset * (offset - 1))) {
+        if (!corner && tileLocation > (offset * (offset - 1))) {
             border = true;
-            let toCheck = [
-                (currentTileLocation - offset - 1),
-                (currentTileLocation - offset),
-                (currentTileLocation - offset + 1),
-                (currentTileLocation - 1),
-                (currentTileLocation + 1)
+            validNeighbors = [
+                (tileLocation - offset - 1),
+                (tileLocation - offset),
+                (tileLocation - offset + 1),
+                (tileLocation - 1),
+                (tileLocation + 1)
             ];
-            mineCount = checkForMines(toCheck);
         }
-        
-        // check everything else
+        // get neighbors of everything else
         if (!corner && !border) {
-            // check mines above
-            let checkAbove = [
-                (currentTileLocation - offset - 1),
-                (currentTileLocation - offset),
-                (currentTileLocation - offset + 1)
+            // get neighbors above
+            validNeighbors = [
+                (tileLocation - offset - 1),
+                (tileLocation - offset),
+                (tileLocation - offset + 1),
+            // get neighbors to the side
+                (tileLocation - 1),
+                (tileLocation + 1),
+            // get neighbors below
+                (tileLocation + offset - 1),
+                (tileLocation + offset),
+                (tileLocation + offset + 1)
             ];
-            // check mines to the side
-            let checkSides = [
-                (currentTileLocation - 1),
-                (currentTileLocation + 1)
-            ];
-            // check mines below
-            let checkBelow = [
-                (currentTileLocation + offset - 1),
-                (currentTileLocation + offset),
-                (currentTileLocation + offset + 1)
-            ];
-            mineCount = checkForMines(checkAbove) + checkForMines(checkSides) + checkForMines(checkBelow);
         }
-        return mineCount;
+        return validNeighbors;
+    }
+    checkForMines(validNeighbors) {
+        let minesNearby = 0;
+        validNeighbors.forEach( location => {
+            if (typeof board[location] === 'object' && board[location].type === 'mine') {
+                minesNearby += 1;
+            }
+        });
+        return minesNearby;
     }
 }
 class Blank extends Number {
     constructor(location) {
         super(location);
-        this.value = 0;
         this.type = 'blank';
+        this.blankNeighbors = this.getBlankNeighbors();
     }
-    // any special functions needed by blank tiles
     getBlankNeighbors() {
         // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
+        let location = this.location;
+        let validNeighbors = this.getValidNeighbors();
+        let blankNeighbors = [];
+        validNeighbors.forEach( neighbor => {
+            if (board[neighbor].value === 0) {
+                blankNeighbors.push(neighbor);
+            }
+        });
+        return blankNeighbors;
     }
 }
 
@@ -214,43 +210,33 @@ function init() {
     offset = DEFAULTS.beginner.offset;
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
-//     board = [                           // r
-//         0,  0,  2, -1,  0,  0,  0,  0,  // 0
-//         0,  0,  3,  3,  0,  0,  0,  0,  // 1
-//         2,  3,  5, -1,  0,  0,  0,  0,  // 2
-//        -1, -1, -1, -1,  0,  0,  0,  0,  // 3
-//         0,  0,  0,  0,  0,  0,  0,  0,  // 4
-//         0,  0,  0,  0,  0,  0,  0,  0,  // 5
-//         0,  0,  0,  0,  0,  0,  0,  0,  // 6
-//         0,  0,  0,  0,  0,  0,  0,  0,  // 7
-//  //  c  0   1   2   3   4   5   6   7
-//     ];
     numberOfMines = DEFAULTS.beginner.numMines;
     setMines();
-    // need to call a calcNumbers function based on board's mine locations
     setNumbers();
     setBlanks();
+    renderTest();
 }
-function setNumbers() {
-
+function handleClick(evt) {
+    if (playerStatus === 'lost') return;
+    let id = parseInt(evt.target.id);
+    if (board[id].status === 'revealed') return;
+    render(id);
 }
-function setBlanks() {
-
-}
-
 // render
 function render(id) {
-        // change tile's background colors based on board number
+    // change any clicked tile object's status from hidden to revealed
+    board[id].status = 'revealed';
+    // change tile's background color when clicked
     let tile = document.getElementById(`${id}`);
     tile.style.backgroundColor = 'lightgray';
     // if bomb, render mine img
-    if (typeof board[id] === 'object' && board[id].type === 'mine') { //can remove check for object, once all tiles are set as objects
+    if (board[id].type === 'mine') {
         tile.style.backgroundColor = 'red';
         tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
         console.log('YOU HIT A BOMB! GAME OVER');
         // show location of all other hidden bombs (50% opacity)
-        board.forEach(function(boardObj) {
-            if (typeof boardObj === 'object' && boardObj.type === 'mine' && boardObj.location !== id) {
+        board.forEach( boardObj => {
+            if (boardObj.type === 'mine' && boardObj.location !== id) {
                 document.getElementById(`${boardObj.location}`).innerHTML = '<img id="other-bombs" src="images/mine-img.png" alt="mine">';
             }
         });
@@ -259,65 +245,122 @@ function render(id) {
         // (do later) stop timer, change smiley, offer a play-a-new-game button
         return;
     }
-    // **************** NEED TO FIX ERRORS HERE **********
-    // write number inside div using innerHTML
-    if (board[id] === 0) {
-        // // change background of all touching tiles around blank tiles no matter the board value
-        document.getElementById(`${id - offset - 1}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id - offset}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id - offset + 1}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id - 1}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id + 1}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id + offset - 1}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id + offset}`).style.backgroundColor = 'lightgray';
-        document.getElementById(`${id + offset + 1}`).style.backgroundColor = 'lightgray';
+    // if a blank is clicked
+    if (board[id].type === 'blank') {
+        // could initialize an array that holds blanksNeedingRendering
+        let blanksNeedingRendering = [id];
+        // initialize another array holding blanksAlreadyRendered
+        let blanksAlreadyRendered = [];
+        // while there are blanks that need rendering, continue while loop
+        while (blanksNeedingRendering.length) {
+            blanksNeedingRendering.forEach(function(blankLoc) {
+                renderBlank(blankLoc);
+                // copy whatever was rendered from blanksNeedingRendering to blanksAlreadyRendered
+                blanksAlreadyRendered.push(blankLoc);
+                // get all valid blank neighbors of rendered tile
+                // filter out any blanks that are in blanksAlreadyRendered
+                let unrenderedBlankNeighbors = board[blankLoc].blankNeighbors;
+                blanksAlreadyRendered.forEach(function(location) {
+                    if (unrenderedBlankNeighbors.includes(location)) {
+                        // remove that value from unrenderedBlankNeighbors
+                            // first get index of this value in our array
+                        let removalIdx = unrenderedBlankNeighbors.indexOf(location);
+                            // then remove value from our array
+                        unrenderedBlankNeighbors.splice(removalIdx, 1);
+                    }
+                });
+                unrenderedBlankNeighbors.forEach(function(blankLoc) {
+                    // get all valid neighbors of these blanks
+                    console.log(blankLoc);
+                    let newNeighbors = board[blankLoc].getValidNeighbors();
 
-        // //  and display board value in divs of all touching tiles that have a board value !== 0
-        let i, indexValue, boardValue;
-        for (i = -1; i <= 1; i++) {
-            // render any numbers above blank tile
-            if (board[id - offset + i] !== 0) {
-                indexValue = id - offset + i;
-                boardValue = board[indexValue];
-                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
-                document.getElementById(`${indexValue}`).innerHTML = `${boardValue}`;
-            }
-            // render any numbers below blank tile
-            if (board[id + offset + i] !== 0) {
-                indexValue = id + offset + i;
-                boardValue = board[indexValue];
-                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
-                document.getElementById(`${indexValue}`).innerHTML = `${board[indexValue]}`;
-            }
+                    // if there are no hidden tiles around the blank, no need to call renderBlank for it
+                    let checkForHidden = false;
+                    for (let i = 0; i < newNeighbors.length; i++) {
+                        let location = newNeighbors[i];
+                        if (board[location].status === 'hidden') {
+                            checkForHidden = true;
+                            break;
+                        }
+                    }
+                    console.log(checkForHidden); // will return true if condition is true, as expected
+
+                    // doesn't work
+                    // let checkForHidden1 = newNeighbors.some(function(location) {
+                    //     board[location].status === 'hidden';
+                    // });
+                    // console.log(checkForHidden1); // always returns false.  ???
+                    // doesn't work
+
+                    // add to blanksNeedingRendering array to be rendered in the next while loop iteration
+                    if (checkForHidden) {
+                        blanksNeedingRendering.push(blankLoc);
+                    }
+                });
+            });
+            // get values from blanksAlreadyRendered and remove them from blanksNeedingRendering array
+            blanksAlreadyRendered.forEach(function(value) {
+                let removalIdx = blanksNeedingRendering.indexOf(value);
+                blanksNeedingRendering.splice(removalIdx, 1);
+            });
+            console.log(blanksNeedingRendering);            
         }
-        for (i = -1; i <= 1; i += 2) {
-            // render any numbers to left and right of blank tile
-            if (board[id + i] !== 0) {
-                indexValue = id + i;
-                boardValue = board[indexValue];
-                document.getElementById(`${indexValue}`).style.color = COLORS[boardValue];
-                document.getElementById(`${id + i}`).innerHTML = `${board[id + i]}`;
-            }
-        }
+
+        // for each addtnl blank, call renderblank
+        // stop when no addtnl blanks can be found
+
+        // // or I can check for any valid neighbors that are blank
+        // //     then check if any of their valid neighbors are hidden
+        // //         if so, fire off a render for that blank location
+        // renderBlank(id);
+        // let blanks = board[id].getValidNeighbors().filter(function(location) {
+        //     return board[location].type === 'blank';
+        // });
+        // blanks.forEach(function(blank) {
+        //     let moreNeighbors = board[blank].getValidNeighbors();
+        //     let needRender = moreNeighbors.some(function(location) {
+        //         return board[location].status === 'hidden';
+        //     });
+        //     if (needRender) renderBlank(blank);
+        // });
+        // // moreNeighbors;
+        // console.log(blanks);
+
+
+        // *** repeating render function ***
+        // addtnlBlanks.forEach(function(location) {
+        //     renderBlank(location);
+        // });
+        // rerun renderblank for that location
+
+        // *** repeating render function ***
         
+        // board[id].blankNeighbors.length > 0 ?
+
         
         // // check up, check down, check left, check right for blanks
         // // if blank is found, switch to blank and continue to re-render all touching tiles around the new blank tile and check up, check down, check left, check right for blanks, until no more blanks left
         // // if no blank tiles, end the switch-checking function
         return;
     }
-    // **************** NEED TO FIX ERRORS HERE **********
-    tile.style.color = COLORS[board[id]];
-    tile.innerHTML = `${board[id]}`;
-    // change any revealed tile object's status from hidden to revealed
+    // otherwise, write number inside div using innerHTML
+    tile.style.color = COLORS[board[id].value];
+    tile.innerHTML = `${board[id].value}`;
+    return;
 }
-function handleClick(evt) {
-    if (playerStatus === 'lost') return;
-    let id = parseInt(evt.target.id);
-    if (typeof board[id] === 'object' && board[id].status === 'revealed') return; //can remove check for object, once all tiles are set as objects
-    render(id);
-};
-
+function renderBlank(id) {
+    board[id].getValidNeighbors().forEach( location => {
+        // display all valid touching tiles as revealed
+        document.getElementById(`${location}`).style.backgroundColor = 'lightgray';
+        board[location].status = 'revealed';
+        //  display number value in divs of all touching tiles that have a board value !== 0
+        if (board[location].value !== 0) { // don't have to worry about mines as they will not be valid neighbors of a blank
+            document.getElementById(`${location}`).style.color = COLORS[board[location].value];
+            document.getElementById(`${location}`).innerHTML = `${board[location].value}`;
+        }
+    });
+    return;
+}
 // Mines! 
 function getMineLocations() {
     let locationOfMines = Array(numberOfMines).fill('to be filled');
@@ -344,24 +387,12 @@ function createMineObjects() {
 }
 function setMines() {
     let mines = createMineObjects();
-    mines.forEach(function(mineObj) {
+    mines.forEach( mineObj => {
         let id = mineObj.location;
         // change board value to mine
         board[id] = mineObj;
     });
 }
-
-
-function checkForMines(toCheckArray) {
-    let minesNearby = 0;
-    toCheckArray.forEach((location) => {
-        if (typeof board[location] === 'object' && board[location].type === 'mine') {
-            minesNearby += 1;
-        }
-    });
-    return minesNearby;
-}
-
 function setNumbers() {
     board.forEach(function(val, idx) {
         // for every board value that isnt a mine, create number object for that location
@@ -370,7 +401,6 @@ function setNumbers() {
         }
     });
 }
-
 function setBlanks() {
     board.forEach(function(val, idx) {
         // replace all Number.value === 0 objects with Blank objects
@@ -382,8 +412,18 @@ function setBlanks() {
 
 // ******* SANDBOX ********
 
+function renderTest() {
+    let tiles = document.querySelectorAll('.tile');
+    tiles.forEach(function(tile, idx) {
+        tile.innerHTML = (board[idx].type === 'mine') ? 
+            '<img src="images/mine-img.png" alt="mine">' : 
+            `${board[idx].value}`;
+        if (board[idx].type === 'mine') {
+            tile.style.backgroundColor = 'red';
+        }
+    });
+}
 console.log(board);
-
 
 // ******************
 
