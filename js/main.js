@@ -171,7 +171,6 @@ class Blank extends Number {
     }
     getBlankNeighbors() {
         // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
-        let location = this.location;
         let validNeighbors = this.getValidNeighbors();
         let blankNeighbors = [];
         validNeighbors.forEach( neighbor => {
@@ -182,7 +181,6 @@ class Blank extends Number {
         return blankNeighbors;
     }
 }
-
 
 
 // state variables
@@ -199,7 +197,7 @@ document.getElementById('board').addEventListener('click', handleClick);
 
 // functions
 
-// init
+// init function sets up page when web app is first loaded
 init();
 function init() {
     playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
@@ -220,102 +218,68 @@ function handleClick(evt) {
     if (board[id].status === 'revealed') return;
     render(id);
 }
+
 // render
 function render(id) {
     // change tile's background color when clicked
     let tile = document.getElementById(`${id}`);
     tile.style.backgroundColor = 'lightgray';
-    // if bomb, render mine img
-    if (board[id].type === 'mine') {
-        // change the clicked tile object's status from hidden to revealed
-        board[id].status = 'revealed';
-        tile.style.backgroundColor = 'red';
-        tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
-        console.log('YOU HIT A BOMB! GAME OVER');
-        // show location of all other hidden bombs (50% opacity)
-        board.forEach( boardObj => {
-            if (boardObj.type === 'mine' && boardObj.location !== id) {
-                document.getElementById(`${boardObj.location}`).innerHTML = '<img id="other-bombs" src="images/mine-img.png" alt="mine">';
-            }
-        });
-        // update playerStatus
-        playerStatus = 'lost';
-        // (do later) stop timer, change smiley, offer a play-a-new-game button
-        return;
+    switch (board[id].type) {
+        case 'mine':
+            renderMine(id, tile);
+            break;
+        case 'blank':
+            renderBlank(id);
+            break;
+        default:
+            // otherwise, write number inside div using innerHTML
+            board[id].status = 'revealed';
+            tile.style.color = COLORS[board[id].value];
+            tile.innerHTML = `${board[id].value}`;
     }
-    // if a blank is clicked
-    if (board[id].type === 'blank') {
-        // could initialize an array that holds blanksNeedingRendering
-        let blanksNeedingRendering = [id];
-        // initialize another array holding blanksAlreadyRendered
-        let blanksAlreadyRendered = [];
-        // while there are blanks that need rendering, continue while loop
-        while (blanksNeedingRendering.length) {
-            let newBlank = blanksNeedingRendering[0];
-            console.log(newBlank);
-            // change the clicked tile object's status from hidden to revealed
-            board[newBlank].status = 'revealed';
-            renderBlank(newBlank);
-            // copy whatever was rendered from blanksNeedingRendering to blanksAlreadyRendered
-            blanksAlreadyRendered.push(newBlank);
-            blanksNeedingRendering.forEach(function(blankLoc) {
-                // get all valid blank neighbors of rendered tile
-                // filter out any blanks that are in blanksAlreadyRendered
-                let unrenderedBlankNeighbors = board[blankLoc].blankNeighbors;
-                blanksAlreadyRendered.forEach(function(location) {
-                    if (unrenderedBlankNeighbors.includes(location)) {
-                        // remove that value from unrenderedBlankNeighbors
-                            // first get index of this value in our array
-                        let removalIdx = unrenderedBlankNeighbors.indexOf(location);
-                            // then remove value from our array
-                        unrenderedBlankNeighbors.splice(removalIdx, 1);
-                    }
-                });
-                unrenderedBlankNeighbors.forEach(function(blankLoc) {
-                    // get all valid neighbors of these blanks
-                    let newNeighbors = board[blankLoc].getValidNeighbors();
-
-                    // if there are no hidden tiles around the blank, no need to call renderBlank for it
-                    // let checkForHidden = false;
-                    // for (let i = 0; i < newNeighbors.length; i++) {
-                    //     let location = newNeighbors[i];
-                    //     if (board[location].status === 'hidden') {
-                    //         checkForHidden = true;
-                    //         break;
-                    //     }
-                    // }
-                    // console.log(checkForHidden); // will return true if condition is true, as expected
-
-                    let checkForHidden = newNeighbors.some(function(location) {
-                        return board[location].status === 'hidden';
-                    });
-
-                    // add to blanksNeedingRendering array to be rendered in the next while loop iteration
-                    if (
-                        checkForHidden && 
-                        // AND not already in blanksNeedingRendering (don't want to add a duplicate)
-                        !(blanksNeedingRendering.some(value => value === blankLoc))
-                        ) {
-                        blanksNeedingRendering.push(blankLoc);
-                    }
-                });
-            });
-            // after doing all the stuff, remove current value from blanksNeedingRendering array
-            blanksNeedingRendering.shift();
-            console.log(blanksNeedingRendering);            
-        }
-        return;
-    }
-    // otherwise, write number inside div using innerHTML
+}
+function renderMine(id, tile) {
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'revealed';
-    tile.style.color = COLORS[board[id].value];
-    tile.innerHTML = `${board[id].value}`;
-    return;
+    tile.style.backgroundColor = 'red';
+    tile.innerHTML = '<img src="images/mine-img.png" alt="mine">';
+    console.log('YOU HIT A BOMB! GAME OVER');
+    // show location of all other hidden bombs (50% opacity)
+    board.forEach( boardObj => {
+        if (boardObj.type === 'mine' && boardObj.location !== id) {
+            document.getElementById(`${boardObj.location}`).innerHTML = '<img id="other-bombs" src="images/mine-img.png" alt="mine">';
+        }
+    });
+    // update playerStatus
+    playerStatus = 'lost';
+    // (do later) stop timer, change smiley, offer a play-a-new-game button
 }
 function renderBlank(id) {
+    // initialize an array that holds blanks needing rendering
+    let blanksNeedingRendering = [id];
+    // initialize another array holding blanks that have already been rendered
+    let blanksAlreadyRendered = [];
+    // while there are blanks that need rendering, continue while loop
+    while (blanksNeedingRendering.length) {
+        // render first item in blanksNeedingRendering array
+        let newBlank = blanksNeedingRendering[0];
+// console.log(newBlank);
+        // change this blank tile's status from hidden to revealed
+        board[newBlank].status = 'revealed';
+        renderSingleBlank(newBlank);
+        // after rendering, push this blank's location to blanksAlreadyRendered array
+        blanksAlreadyRendered.push(newBlank);
+        // check for any blanks touching this one that need to be rendered as well
+        findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered);
+        // after rendering current blank and finding any renderable blanks nearby, remove current value from blanksNeedingRendering array
+        blanksNeedingRendering.shift();
+// console.log(blanksNeedingRendering);            
+    }
+// console.log(blanksAlreadyRendered);
+}
+function renderSingleBlank(id) {
     board[id].getValidNeighbors().forEach( location => {
-        // display all valid touching tiles as revealed
+        // display and change all valid touching tiles as revealed
         document.getElementById(`${location}`).style.backgroundColor = 'lightgray';
         board[location].status = 'revealed';
         //  display number value in divs of all touching tiles that have a board value !== 0
@@ -326,10 +290,44 @@ function renderBlank(id) {
     });
     return;
 }
+function findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered) {
+    blanksNeedingRendering.forEach( blankLoc => {
+        // get all valid blank neighbors of rendered tile
+        // filter out any blanks that are in blanksAlreadyRendered
+        let unrenderedBlankNeighbors = board[blankLoc].blankNeighbors;
+        blanksAlreadyRendered.forEach( location => {
+            if (unrenderedBlankNeighbors.includes(location)) {
+                // remove that value from unrenderedBlankNeighbors
+                // first get index of this value in our array
+                let removalIdx = unrenderedBlankNeighbors.indexOf(location);
+                // then remove value from our array
+                unrenderedBlankNeighbors.splice(removalIdx, 1);
+            }
+        });
+        unrenderedBlankNeighbors.forEach( blankLoc => {
+            // get all valid neighbors of these blanks
+            let newNeighbors = board[blankLoc].getValidNeighbors();
+            let checkForHidden = newNeighbors.some( location => {
+                return board[location].status === 'hidden';
+            });
+            // add to blanksNeedingRendering array to be rendered in the next while loop iteration
+            if (
+                // if this blank is next to a hidden tile
+                checkForHidden && 
+                // AND not already in blanksNeedingRendering (don't want to add a duplicate)
+                !(blanksNeedingRendering.some(value => value === blankLoc))
+                ) {
+                // add this blank to the needingRendering array
+                blanksNeedingRendering.push(blankLoc);
+            }
+        });
+    });
+}
 // Mines! 
 function getMineLocations() {
     let locationOfMines = Array(numberOfMines).fill('to be filled');
     let prevMineLocations = [];
+    // generate random mine locations
     locationOfMines.forEach((val, idx) => {
         let randLocation = Math.floor(Math.random() * board.length);
         // while loop: keep reassigning a new location if location = any number in prevMineLocations
@@ -350,6 +348,7 @@ function createMineObjects() {
     });
     return mineObjects;
 }
+// place 'mine' objects in board array
 function setMines() {
     let mines = createMineObjects();
     mines.forEach( mineObj => {
@@ -358,6 +357,7 @@ function setMines() {
         board[id] = mineObj;
     });
 }
+// place 'number' objects in board array
 function setNumbers() {
     board.forEach(function(val, idx) {
         // for every board value that isnt a mine, create number object for that location
@@ -366,6 +366,7 @@ function setNumbers() {
         }
     });
 }
+// replace any 'number' objects that have a value of zero with special 'blank' objects
 function setBlanks() {
     board.forEach(function(val, idx) {
         // replace all Number.value === 0 objects with Blank objects
