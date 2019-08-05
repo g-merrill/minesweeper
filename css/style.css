@@ -7,18 +7,64 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     height: 100vh;
 }
+
 h1 {
     font-size: calc(20px + 2vmin);
+    margin: 1vh 0;
+}
+.nav-bar {
+    display: flex;
+    align-items: center;
+    width: 60vmin;
+    margin: 1vh 0;
+}
+.preferences {
+    background-color: black;
+    border-radius: 2vmin;
+    padding: 1vmin 3vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pref-arrow {
+    border-top: 2vmin solid white;
+    border-left: 2vmin solid transparent;
+    border-right: 2vmin solid transparent;
+}
+.pref-text {
+    color: white;
+    margin: 0 0 0 2vmin;
+    font-size: calc(15px + 1vmin);
+}
+.status-bar {
+    display: flex;
+    align-items: center;
+    width: 60vmin;
+    background-color: black;
+    margin: 2vh 0 0;
+}
+.mine-tracker, .timer {
+    width: 35%;
+    font-size: calc(15px + 4vmin);
+    text-align: center;
+    font-weight: bold;
+    color: red;
+}
+.smiley {
+    width: 30%;
+    height: 100%;
+    font-size: calc(10px + 5vmin);
+    padding: 1.5% 0 0;
+    background-color: rgba(150, 150, 150, 1);
+    border: 0.2vmin solid dimgray;
 }
 .board {
     display: grid;
-    grid-template-columns: repeat(8, 9vmin [col-start]);
-    grid-template-rows: repeat(8, 9vmin [row-start]);
-    margin: 5vmin 0 0;
+    grid-template-columns: repeat(8, 7.5vmin [col-start]);
+    grid-template-rows: repeat(8, 7.5vmin [row-start]);
 }
 .tile {
     background-color: rgba(150, 150, 150, 1);

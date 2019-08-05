@@ -185,7 +185,7 @@ class Blank extends Number {
 
 
 // state variables
-let board, offset, playerStatus, numberOfMines;
+let board, offset, playerStatus, numberOfMines, gameMode;
 
 // cached elements
 
@@ -239,14 +239,15 @@ function renderRemoveMark(id) {
 // functions
 
 // init function sets up page when web app is first loaded
-init();
-function init() {
+gameMode = 'beginner';
+init(gameMode);
+function init(gameMode) {
     playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
     // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
-    offset = DEFAULTS.beginner.offset;
+    offset = DEFAULTS[gameMode].offset;
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
-    numberOfMines = DEFAULTS.beginner.numMines;
+    numberOfMines = DEFAULTS[gameMode].numMines;
     setMines();
     setNumbers();
     setBlanks();
@@ -278,10 +279,37 @@ function render(id) {
             tile.style.color = COLORS[board[id].value];
             tile.innerHTML = `${board[id].value}`;
     }
+    // check for winner,
+    if (checkWinner()) {
+        renderWinner();
+    }
+}
+function checkWinner() {
+    let revealedCount = 0;
+    board.forEach(boardObj => {
+        if (boardObj.status === 'revealed') revealedCount++;
+    });
+    if (revealedCount === board.length - numberOfMines) {
+        // find any unflagged, hidden mine tiles and put flags on them!
+        let toAutoFlag = board.filter( boardObj => {
+            return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
+        });
+        toAutoFlag.forEach( boardObj => {
+            document.getElementById(`${boardObj.location}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
+            boardObj.flagged = 'yes';
+        });
+        return true;
+    }
+    return false;
+}
+function renderWinner() {
+    console.log('You won!');
+    // update winner variable
+    playerStatus = 'won';
 }
 function renderMine(id, tile) {
     // change the clicked tile object's status from hidden to revealed
-    board[id].status = 'revealed';
+    board[id].status = 'exploded';
     tile.style.backgroundColor = 'red';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     console.log('YOU HIT A BOMB! GAME OVER');
@@ -291,7 +319,6 @@ function renderMine(id, tile) {
             document.getElementById(`${boardObj.location}`).innerHTML = '<img class="mine-img other-bombs" src="images/mine-img.png" alt="mine">';
         }
     });
-    // update playerStatus
     playerStatus = 'lost';
     // (do later) stop timer, change smiley, offer a play-a-new-game button
 }
