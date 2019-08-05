@@ -30,6 +30,7 @@ class Tile {
         // location references both the dom id and the array id
         this.location = location;
         this.status = 'hidden';
+        this.flagged = 'no';
     }
 }
 
@@ -192,7 +193,43 @@ let board, offset, playerStatus, numberOfMines;
 // event listeners
 
 // adds an event listener to the board container
-document.getElementById('board').addEventListener('click', handleClick);
+document.getElementById('board').addEventListener('click', handleClickLeft);
+document.getElementById('board').addEventListener('contextmenu', handleClickRight, false);
+function handleClickRight(evt) {
+    evt.preventDefault();
+    if (playerStatus === 'lost') return false;
+    let id = parseInt(evt.target.id);
+    if (board[id].status === 'revealed') {
+        console.log('cannot mark a revealed tile!');
+        return false;
+    }
+    if (board[id].flagged === 'no') {
+        renderFlag(id);
+        console.log('flagged!');
+        return false;
+    } else if (board[id].flagged === 'yes') { // need to define a flagged property on all tiles - 'yes', 'no', and 'unsure'
+        renderUnsure(id);
+        console.log('marked unsure!');
+        return false;
+    } else {
+        renderRemoveMark(id);
+        console.log('mark removed!');
+        return false;
+    }
+}
+function renderFlag(id) {
+    // XXX
+    // update flagged property
+}
+function renderUnsure(id) {
+    
+    // update flagged property
+}
+function renderRemoveMark(id) {
+    
+    // update flagged property
+}
+
 
 
 // functions
@@ -209,12 +246,12 @@ function init() {
     setMines();
     setNumbers();
     setBlanks();
-    renderTest();
+    // renderTest();
 }
-// handleClick gets location of click, parses, returns before render if necessary, and passes to render function
-function handleClick(evt) {
+// handleClickLeft gets location of click, parses, returns before render if necessary, and passes to render function
+function handleClickLeft(evt) {
     if (playerStatus === 'lost') return;
-    let id = parseInt(evt.target.id);
+    let id = evt.target.id;
     if (board[id].status === 'revealed') return;
     render(id);
 }
@@ -393,4 +430,6 @@ console.log(board);
 
 // ******************
 
-
+// TO DO - check deliverables
+// right-click to flag
+// add some win logic
