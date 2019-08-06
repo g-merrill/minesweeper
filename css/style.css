@@ -12,8 +12,12 @@ body {
     background-color: rgba(150, 150, 150, 1);
 }
 h1 {
-    font-size: calc(10px + 3vmin);
+    font-size: calc(5px + 3vmin);
     margin: 2vh 0 1vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: lightgray;
+    padding: 1vh 15vw;
+    border-radius: 2vmin;
 }
 .container {
     display: flex;
@@ -64,6 +68,7 @@ h1 {
     color: red;
     background-color: black;
     padding: 0 1vmin;
+    border: 0.5vmin solid dimgray;
 }
 .smiley {
     width: 25%;
@@ -71,13 +76,18 @@ h1 {
     border: 3px solid rgba(105, 105, 105, 0.75);
     border-radius: calc(5px + 1vmin);
     padding: 1vmin;
+    background-color: black;
 }
 .smiley:active {
     background-color: rgba(105, 105, 105, 0.75);
 }
+.smiley:hover {
+    border: 3px solid rgba(255, 0, 0, 0.75);
+}
 .board {
     display: grid;
     border: 0.1vmin solid dimgray;
+    position: relative;
 }
 .tile {
     background-color: rgba(150, 150, 150, 1);
@@ -100,4 +110,22 @@ h1 {
 }
 .flag-img {
     height: 70%;
+}
+div.win-message {
+    background-color: rgba(0, 0, 0, 0.75);
+    position: absolute;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+div.win-message>p {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: lightgray;
+    font-size: calc(5px + 3vmin);
+    text-align: center;
+    width: 90%;
+    padding: 5% 0;
+    border-radius: 2vmin;
 }

@@ -183,7 +183,7 @@ class Blank extends Number {
 
 // state variables
 let board, offset, numberOfMines, playerStatus;
-let gameMode = 'expert'; // beginner, intermediate, expert, or custom
+let gameMode = 'beginner'; // beginner, intermediate, expert, or custom
 
 // cached elements
 let boardEl = document.getElementById('board');
@@ -259,8 +259,8 @@ function init(gameMode) {
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
     // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
-    numberOfMines = DEFAULTS[gameMode].numMines;
-    // numberOfMines = 1;
+    // numberOfMines = DEFAULTS[gameMode].numMines;
+    numberOfMines = 1;
     setMines();
     setNumbers();
     setBlanks();
@@ -330,21 +330,17 @@ function handleClickRight(evt) {
     if (playerStatus === 'lost') return false;
     let id = parseInt(evt.target.id);
     if (board[id].status === 'revealed') {
-        console.log('cannot mark a revealed tile!');
         return false;
     }
     switch (board[id].flagged) {
         case 'no':
             renderFlag(id);
-            console.log('flagged!');
             break;
         case 'yes':
             renderUnsure(id);
-            console.log('marked unsure!');
             break;
         default:
             renderRemoveMark(id);
-            console.log('mark removed!');
     }
     return false;
 }
@@ -521,7 +517,13 @@ function renderWinner() {
     });
     flagsLeftDisplay.textContent = '000';
     smiley.setAttribute('src', 'images/smiley-win.png');
-    console.log('You won!');
+    // create new transparent div that has fixed position
+    // create a <p> inside the div that has semitransparent black background, solid white text
+    let winnerDiv = document.createElement('div');
+    winnerDiv.className = 'win-message';
+    winnerDiv.innerHTML = `<p>Congrats, winner!! You successfully cleared the minefield!</p>`;
+    document.getElementById('board').appendChild(winnerDiv);
+    console.log(winnerDiv);
     // update winner variable
     playerStatus = 'won';
 }
@@ -562,3 +564,11 @@ console.log(board);
 
 // TO DO - check deliverables
 // add some win messaging
+// settings tab (if nothing else, don't do a dropdown, just put it directly on the screen)
+    // ^ could still style it to be as cool as a dropdown
+        // beginner, intermediate, expert (default# of mines and custom # mines in vertical radio), grayed out number box that activates with custom, reset button that lights up when changed from current gameMode
+// timer functionality
+// readme
+// styling
+// bomb propagate animation
+// 
