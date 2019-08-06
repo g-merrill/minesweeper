@@ -45,30 +45,37 @@ h1 {
 }
 .status-bar {
     display: flex;
+    justify-content: space-evenly;
     align-items: center;
     width: 60vmin;
-    background-color: black;
+    background-color: rgba(150, 150, 150, 1);
     margin: 2vh 0 0;
+    padding: 1vmin 0;
+    border-top: 0.5vmin solid dimgray;
+    border-right: 0.5vmin solid dimgray;
+    border-left: 0.5vmin solid dimgray;
+    border-bottom: 0.05vmin solid dimgray;
 }
-.mine-tracker, .timer {
-    width: 35%;
+.flag-tracker, .timer {
     font-size: calc(15px + 4vmin);
     text-align: center;
     font-weight: bold;
     color: red;
+    background-color: black;
+    padding: 0 1vmin;
 }
 .smiley {
-    width: 30%;
-    height: 100%;
-    font-size: calc(10px + 5vmin);
-    padding: 1.5% 0 0;
+    width: 25%;
     background-color: rgba(150, 150, 150, 1);
-    border: 0.2vmin solid dimgray;
+    border: 3px solid rgba(105, 105, 105, 0.75);
+    border-radius: calc(5px + 1vmin);
+    padding: 1vmin;
 }
 .board {
     display: grid;
     grid-template-columns: repeat(8, 7.5vmin [col-start]);
     grid-template-rows: repeat(8, 7.5vmin [row-start]);
+    border: 0.1vmin solid dimgray;
 }
 .tile {
     background-color: rgba(150, 150, 150, 1);
