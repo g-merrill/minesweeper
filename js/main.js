@@ -188,6 +188,7 @@ let board, offset, playerStatus, numberOfMines, gameMode;
 let settingsButton = document.getElementById('settings-button');
 let flagsLeftDisplay = document.getElementById('flag-tracker');
 let smiley = document.getElementById('smiley');
+let timerDisplay = document.getElementById('timer');
 let tiles = document.querySelectorAll('.tile');
 
 // event listeners
@@ -330,13 +331,36 @@ function render(id) {
 }
 function renderFlag(id) {
     document.getElementById(`${id}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
-    // update mines left display
-
+    // update flags left display
+    let oldNum = parseInt(flagsLeftDisplay.textContent);
+    // the following is an unorthodox way of using switch statements, but I preferred it to two else ifs
+    switch (true) {
+        case (oldNum > 100):
+            flagsLeftDisplay.textContent = `${oldNum - 1}`;
+            break;
+        case (oldNum <= 100 && oldNum > 10):
+            flagsLeftDisplay.textContent = `0${oldNum - 1}`;
+            break;
+        default:
+            flagsLeftDisplay.textContent = `00${oldNum - 1}`;
+    }
     // update flagged property
     board[id].flagged = 'yes';
 }
 function renderUnsure(id) {
     document.getElementById(`${id}`).innerHTML = '?';
+    // update flags left display
+    let oldNum = parseInt(flagsLeftDisplay.textContent);
+    switch (true) {
+        case (oldNum >= 99):
+            flagsLeftDisplay.textContent = `${oldNum + 1}`;
+            break;
+        case (oldNum < 99 && oldNum >= 9):
+            flagsLeftDisplay.textContent = `0${oldNum + 1}`;
+            break;
+        default:
+            flagsLeftDisplay.textContent = `00${oldNum + 1}`;
+    }
     // update flagged property
     board[id].flagged = 'unsure';
 }
@@ -478,6 +502,9 @@ function seeBoard() {
     });
 }
 console.log(board);
+
+// ******************
+// Note: flags left display cannot handle more than 99 mines
 
 // ******************
 
