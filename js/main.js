@@ -324,10 +324,8 @@ function render(id) {
             tile.style.color = COLORS[board[id].value];
             tile.innerHTML = `${board[id].value}`;
     }
-    // check for winner,
-    if (checkWinner()) {
-        renderWinner();
-    }
+    // checkWinner has renderWinner inside of it
+    checkWinner();
 }
 function renderFlag(id) {
     document.getElementById(`${id}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
@@ -460,19 +458,19 @@ function checkWinner() {
         if (boardObj.status === 'revealed') revealedCount++;
     });
     if (revealedCount === board.length - numberOfMines) {
-        // find any unflagged, hidden mine tiles and put flags on them!
-        let toAutoFlag = board.filter( boardObj => {
-            return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
-        });
-        toAutoFlag.forEach( boardObj => {
-            document.getElementById(`${boardObj.location}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
-            boardObj.flagged = 'yes';
-        });
-        return true;
+        renderWinner();
     }
-    return false;
 }
 function renderWinner() {
+    // find any unflagged, hidden mine tiles and put flags on them!
+    let toAutoFlag = board.filter( boardObj => {
+        return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
+    });
+    toAutoFlag.forEach( boardObj => {
+        document.getElementById(`${boardObj.location}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
+        boardObj.flagged = 'yes';
+    });
+    flagsLeftDisplay.textContent = '000';
     smiley.setAttribute('src', 'images/smiley-win.png');
     console.log('You won!');
     // update winner variable
