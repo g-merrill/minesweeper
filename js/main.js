@@ -217,6 +217,7 @@ function createBoard(offsetValue) {
     for (let i = 0; i < numTiles; i++) {
         let newTile = document.createElement('div');
         newTile.className = 'tile';
+        newTile.style.fontSize = `${(-5 / 16) * offsetValue + 9.5}vmin`;
         newTile.id = `${i}`;
         boardEl.appendChild(newTile);
     }
