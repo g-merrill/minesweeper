@@ -183,7 +183,7 @@ class Blank extends Number {
 
 // state variables
 let board, offset, numberOfMines, playerStatus;
-let gameMode = 'beginner'; // beginner, intermediate, expert, or custom
+let gameMode = 'expert'; // beginner, intermediate, expert, or custom
 
 // cached elements
 let boardEl = document.getElementById('board');
@@ -210,8 +210,8 @@ function createBoard(offsetValue) {
     // clear whatever might've already been in #board section
     boardEl.innerHTML = '';
     // set properties of boardEl
-    boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, 7.5vmin [col-start])`;
-    boardEl.style.gridTemplateRows = `repeat(${offsetValue}, 7.5vmin [row-start])`;
+    boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, ${60 / offsetValue}vmin [col-start])`;
+    boardEl.style.gridTemplateRows = `repeat(${offsetValue}, ${60 / offsetValue}vmin [row-start])`;
     // generate and place tiles in boardEl
     let numTiles = offsetValue * offsetValue;
     for (let i = 0; i < numTiles; i++) {
