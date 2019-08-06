@@ -339,7 +339,7 @@ function renderFlag(id) {
         case (oldNum <= 100 && oldNum > 10):
             flagsLeftDisplay.textContent = `0${oldNum - 1}`;
             break;
-        default:
+        case (oldNum > 0):
             flagsLeftDisplay.textContent = `00${oldNum - 1}`;
     }
     // update flagged property
@@ -356,8 +356,15 @@ function renderUnsure(id) {
         case (oldNum < 99 && oldNum >= 9):
             flagsLeftDisplay.textContent = `0${oldNum + 1}`;
             break;
-        default:
+        case (oldNum > 0):
             flagsLeftDisplay.textContent = `00${oldNum + 1}`;
+            break;
+        default:
+            let flagsOnBoard = 0;
+            board.forEach( boardObj => {
+                boardObj.flagged === 'yes' ? flagsOnBoard++ : flagsOnBoard;
+            });
+            flagsOnBoard === numberOfMines ? flagsLeftDisplay.textContent = `00${oldNum + 1}` : flagsOnBoard; 
     }
     // update flagged property
     board[id].flagged = 'unsure';
@@ -502,7 +509,7 @@ function seeBoard() {
 console.log(board);
 
 // ******************
-// Note: flags left display cannot handle more than 99 mines
+
 
 // ******************
 
