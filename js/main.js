@@ -259,8 +259,8 @@ function init(gameMode) {
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
     // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
-    // numberOfMines = DEFAULTS[gameMode].numMines;
-    numberOfMines = 1;
+    numberOfMines = DEFAULTS[gameMode].numMines;
+    // numberOfMines = 1;
     setMines();
     setNumbers();
     setBlanks();
@@ -417,7 +417,6 @@ function renderMine(id, tile) {
     board[id].status = 'exploded';
     tile.style.backgroundColor = 'red';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
-    console.log('YOU HIT A BOMB! GAME OVER');
     // show location of all other hidden bombs (50% opacity)
     board.forEach( boardObj => {
         if (boardObj.type === 'mine' && boardObj.location !== id) {
@@ -523,7 +522,6 @@ function renderWinner() {
     winnerDiv.className = 'win-message';
     winnerDiv.innerHTML = `<p>Congrats, winner!! You successfully cleared the minefield!</p>`;
     document.getElementById('board').appendChild(winnerDiv);
-    console.log(winnerDiv);
     // update winner variable
     playerStatus = 'won';
 }

@@ -13,11 +13,35 @@ body {
 }
 h1 {
     font-size: calc(5px + 3vmin);
-    margin: 2vh 0 1vh;
+    margin: 2vh 0 0;
     background-color: rgba(0, 0, 0, 0.75);
     color: lightgray;
-    padding: 1vh 15vw;
     border-radius: 2vmin;
+    width: 60vmin;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+h1>* {
+    margin: 2vmin 0;
+}
+h1>div {
+    border-radius: 1vmin;
+    display: flex;
+    align-items: center;
+    padding: 1vmin;
+    border: 0.2vmin solid dimgray;
+}
+h1>div:first-child {
+    background-color: rgba(150, 150, 150, 1);
+    /* padding: 1vmin; */
+}
+h1>div:last-child {
+    background-color: rgba(255, 0, 0, 0.75);
+    /* padding: 1vmin; */
+}
+h1>div>img {
+    height: calc(5px + 3vmin);
 }
 .container {
     display: flex;
@@ -28,7 +52,7 @@ h1 {
     display: flex;
     align-items: center;
     width: 60vmin;
-    margin: 1vh 0;
+    margin: 1vh 0 0;
 }
 .settings-button {
     background-color: black;
@@ -54,7 +78,7 @@ h1 {
     align-items: center;
     width: 60vmin;
     background-color: rgba(150, 150, 150, 1);
-    margin: 2vh 0 0;
+    margin: 1vh 0 0;
     padding: 1vmin 0;
     border-top: 0.5vmin solid dimgray;
     border-right: 0.5vmin solid dimgray;
