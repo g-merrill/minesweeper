@@ -182,9 +182,11 @@ class Blank extends Number {
 
 
 // state variables
-let board, offset, playerStatus, numberOfMines, gameMode;
+let board, offset, numberOfMines, playerStatus;
+let gameMode = 'beginner'; // beginner, intermediate, expert, or custom
 
 // cached elements
+let boardEl = document.getElementById('board');
 let settingsButton = document.getElementById('settings-button');
 let flagsLeftDisplay = document.getElementById('flag-tracker');
 let smiley = document.getElementById('smiley');
@@ -194,19 +196,56 @@ let tiles = document.querySelectorAll('.tile');
 // event listeners
 
 // adds an event listener to the board container
-document.getElementById('board').addEventListener('click', handleClickLeft);
-document.getElementById('board').addEventListener('contextmenu', handleClickRight, false);
-document.getElementById('smiley').addEventListener('click', reset);
+boardEl.addEventListener('click', handleClickLeft);
+boardEl.addEventListener('contextmenu', handleClickRight, false);
+smiley.addEventListener('click', newGame);
 
 
 
 
 // functions
 
+// createBoard will generate board in DOM after all objects are placed inside
+function createBoard(offsetValue) {
+    // clear whatever might've already been in #board section
+    boardEl.innerHTML = '';
+    // set properties of boardEl
+    boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, 7.5vmin [col-start])`;
+    boardEl.style.gridTemplateRows = `repeat(${offsetValue}, 7.5vmin [row-start])`;
+    // generate and place tiles in boardEl
+    let numTiles = offsetValue * offsetValue;
+    for (let i = 0; i < numTiles; i++) {
+        let newTile = document.createElement('div');
+        newTile.className = 'tile';
+        newTile.id = `${i}`;
+        boardEl.appendChild(newTile);
+    }
+}
+
+// .board {
+//     display: grid;
+//     grid-template-columns: repeat(8, 7.5vmin [col-start]);
+//     grid-template-rows: repeat(8, 7.5vmin [row-start]);
+//     border: 0.1vmin solid dimgray;
+// }
+// .tile {
+//     background-color: rgba(150, 150, 150, 1);
+//     border: 0.2vmin solid dimgray;
+//     width: 100%;
+//     height: 100%;
+//     border-radius: 5%;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     font-size: 7vmin;
+// }
+
+
+
+
 
 
 // init function sets up page when web app is first loaded
-gameMode = 'beginner';
 init(gameMode);
 function init(gameMode) {
     smiley.setAttribute('src', 'images/smiley.png');
@@ -214,6 +253,8 @@ function init(gameMode) {
     flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
     // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
     offset = DEFAULTS[gameMode].offset;
+    // create board in DOM based on value of offset (css sizing nightmare)
+    createBoard(offset);
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
     // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
@@ -483,12 +524,13 @@ function renderWinner() {
     // update winner variable
     playerStatus = 'won';
 }
-function reset() {
+function newGame() {
     init(gameMode);
     tiles.forEach( tile => {
         tile.innerHTML = '';
         tile.style.backgroundColor = 'rgba(150, 150, 150, 1)';
     });
+    // seeBoard();
 }
 
 // ******* SANDBOX ********
@@ -511,8 +553,11 @@ console.log(board);
 // ******************
 
 
+// notes: 
+// -js will work with any gamemode now, but css will break with the grid stuff
+// -init will only work with default game modes 
+
 // ******************
 
 // TO DO - check deliverables
-// right-click to flag
-// add some win logic
+// add some win messaging
