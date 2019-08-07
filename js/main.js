@@ -182,8 +182,7 @@ class Blank extends Number {
 
 
 // state variables
-let board, offset, numberOfMines, playerStatus;
-let gameMode = 'beginner'; // beginner, intermediate, expert, or custom
+let board, offset, numberOfMines, playerStatus, gameMode;
 
 // cached elements
 let boardEl = document.getElementById('board');
@@ -191,6 +190,9 @@ let flagsLeftDisplay = document.getElementById('flag-tracker');
 let smiley = document.getElementById('smiley');
 let timerDisplay = document.getElementById('timer');
 let tiles = document.querySelectorAll('.tile');
+let beginnerBtn = document.getElementById('beginner-btn');
+let intermediateBtn = document.getElementById('intermediate-btn');
+let expertBtn = document.getElementById('expert-btn');
 
 // event listeners
 
@@ -198,9 +200,42 @@ let tiles = document.querySelectorAll('.tile');
 boardEl.addEventListener('click', handleClickLeft);
 boardEl.addEventListener('contextmenu', handleClickRight, false);
 smiley.addEventListener('click', newGame);
-
-
-
+beginnerBtn.addEventListener('click', beginnerMode);
+intermediateBtn.addEventListener('click', intermediateMode);
+expertBtn.addEventListener('click', expertMode);
+function beginnerMode() {
+    offset = DEFAULTS.beginner.offset;
+    numberOfMines = DEFAULTS.beginner.numMines;
+    clearRedStyling();
+    setRedStyling(1);
+    init();
+}
+function intermediateMode() {
+    offset = DEFAULTS.intermediate.offset;
+    numberOfMines = DEFAULTS.intermediate.numMines;
+    clearRedStyling();
+    setRedStyling(2);
+    init();
+}
+function expertMode() {
+    offset = DEFAULTS.expert.offset;
+    numberOfMines = DEFAULTS.expert.numMines;
+    clearRedStyling();
+    setRedStyling(3);
+    init();
+}
+function clearRedStyling() {
+    for (let i = 1; i <=3; i++) {
+        document.getElementById(`border${i}`).classList.remove('clicked');
+        document.getElementById(`text${i}`).classList.remove('clicked');
+        document.getElementById(`fill${i}`).classList.remove('clicked');
+    }
+}
+function setRedStyling(modeIdx) {
+    document.getElementById(`border${modeIdx}`).classList.toggle('clicked');
+    document.getElementById(`text${modeIdx}`).classList.toggle('clicked');
+    document.getElementById(`fill${modeIdx}`).classList.toggle('clicked');    
+}
 
 // functions
 
@@ -222,34 +257,30 @@ function createBoard(offsetValue) {
     }
 }
 
-// .board {
-//     display: grid;
-//     grid-template-columns: repeat(8, 7.5vmin [col-start]);
-//     grid-template-rows: repeat(8, 7.5vmin [row-start]);
-//     border: 0.1vmin solid dimgray;
-// }
-// .tile {
-//     background-color: rgba(150, 150, 150, 1);
-//     border: 0.2vmin solid dimgray;
-//     width: 100%;
-//     height: 100%;
-//     border-radius: 5%;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     font-size: 7vmin;
-// }
 
-
-
+function getGameMode() {
+    let idArray = document.querySelector('.clicked').id.split('');
+    let modeIdx = idArray[idArray.length - 1];
+    switch (modeIdx) {
+        case '3':
+            gameMode = 'expert';
+            break;
+        case '2':
+            gameMode = 'intermediate';
+            break;
+        default:
+            gameMode = 'beginner';
+    }
+}
 
 
 
 // init function sets up page when web app is first loaded
-init(gameMode);
-function init(gameMode) {
+init();
+function init() {
     smiley.setAttribute('src', 'images/smiley.png');
     playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
+    getGameMode();
     flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
     // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
     offset = DEFAULTS[gameMode].offset;
@@ -323,7 +354,6 @@ function handleClickLeft(evt) {
     let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
     if (board[id].status === 'revealed') return;
     render(id);
-    console.log(evt);
 }
 function handleClickRight(evt) {
     evt.preventDefault();
@@ -348,7 +378,8 @@ function handleClickRight(evt) {
 function render(id) {
     // change tile's background color when clicked
     let tile = document.getElementById(`${id}`);
-    tile.style.backgroundColor = 'lightgray';
+    tile.style.backgroundColor = 'rgba(211, 211, 211, 1)';
+    tile.style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
     switch (board[id].type) {
         case 'mine':
             renderMine(id, tile);
@@ -415,7 +446,7 @@ function renderRemoveMark(id) {
 function renderMine(id, tile) {
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'exploded';
-    tile.style.backgroundColor = 'red';
+    tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     // show location of all other hidden bombs (50% opacity)
     board.forEach( boardObj => {
@@ -453,7 +484,8 @@ function renderBlank(id) {
 function renderSingleBlank(id) {
     board[id].getValidNeighbors().forEach( location => {
         // display and change all valid touching tiles as revealed
-        document.getElementById(`${location}`).style.backgroundColor = 'lightgray';
+        document.getElementById(`${location}`).style.backgroundColor = 'rgba(211, 211, 211, 1)';
+        document.getElementById(`${location}`).style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
         board[location].status = 'revealed';
         //  display number value in divs of all touching tiles that have a board value !== 0
         if (board[location].value !== 0) { // don't have to worry about mines as they will not be valid neighbors of a blank
@@ -520,8 +552,8 @@ function renderWinner() {
     // create a <p> inside the div that has semitransparent black background, solid white text
     let winnerDiv = document.createElement('div');
     winnerDiv.className = 'win-message';
-    winnerDiv.innerHTML = `<p>Congrats, winner!! You successfully cleared the minefield!</p>`;
-    document.getElementById('board').appendChild(winnerDiv);
+    winnerDiv.innerHTML = `<p>Congrats!! You have successfully cleared the minefield!</p>`;
+    boardEl.appendChild(winnerDiv);
     // update winner variable
     playerStatus = 'won';
 }
@@ -538,10 +570,11 @@ function newGame() {
 
 function seeBoard() {
     tiles.forEach(function(tile, idx) {
-        tile.style.backgroundColor = 'lightgray';
+        tile.style.backgroundColor = 'rgba(211, 211, 211, 1)';
+        tile.style.bborder = '0.2vmin solid rgba(105, 105, 105, 1)';
         if (board[idx].type === 'mine') {
             tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
-            tile.style.backgroundColor = 'red';
+            tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
             tile.style.opacity = 0.75;
         } else {
             tile.innerHTML = `${board[idx].value}`;
@@ -555,7 +588,7 @@ console.log(board);
 
 
 // notes: 
-// -js will work with any gamemode now, but css will break with the grid stuff
+// -js will work with any gamemode now, but haven't added mode-button functionality
 // -init will only work with default game modes 
 
 // ******************
