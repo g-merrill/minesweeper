@@ -153,7 +153,7 @@ class Number extends Tile {
     }
     checkForMines(validNeighbors) {
         let minesNearby = 0;
-        validNeighbors.forEach( location => {
+        validNeighbors.forEach(location => {
             if (typeof board[location] === 'object' && board[location].type === 'mine') {
                 minesNearby += 1;
             }
@@ -171,7 +171,7 @@ class Blank extends Number {
         // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
         let validNeighbors = this.getValidNeighbors();
         let blankNeighbors = [];
-        validNeighbors.forEach( neighbor => {
+        validNeighbors.forEach(neighbor => {
             if (board[neighbor].value === 0) {
                 blankNeighbors.push(neighbor);
             }
@@ -195,14 +195,15 @@ let intermediateBtn = document.getElementById('intermediate-btn');
 let expertBtn = document.getElementById('expert-btn');
 
 // event listeners
-
-// adds an event listener to the board container
 boardEl.addEventListener('click', handleClickLeft);
 boardEl.addEventListener('contextmenu', handleClickRight, false);
 smiley.addEventListener('click', newGame);
 beginnerBtn.addEventListener('click', beginnerMode);
 intermediateBtn.addEventListener('click', intermediateMode);
 expertBtn.addEventListener('click', expertMode);
+
+
+// functions
 function beginnerMode() {
     offset = DEFAULTS.beginner.offset;
     numberOfMines = DEFAULTS.beginner.numMines;
@@ -236,9 +237,41 @@ function setRedStyling(modeIdx) {
     document.getElementById(`text${modeIdx}`).classList.toggle('clicked');
     document.getElementById(`fill${modeIdx}`).classList.toggle('clicked');    
 }
-
-// functions
-
+// init function sets up page when web app is first loaded
+init();
+function init() {
+    smiley.setAttribute('src', 'images/smiley.png');
+    playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
+    getGameMode();
+    flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
+    // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
+    offset = DEFAULTS[gameMode].offset;
+    // create board in DOM based on value of offset (css sizing nightmare)
+    createBoard(offset);
+    // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
+    board = Array(offset * offset).fill(0);
+    // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
+    // numberOfMines = DEFAULTS[gameMode].numMines;
+    numberOfMines = 1;
+    setMines();
+    setNumbers();
+    setBlanks();
+    // seeBoard();
+}
+function getGameMode() {
+    let idArray = document.querySelector('.clicked').id.split('');
+    let modeIdx = idArray[idArray.length - 1];
+    switch (modeIdx) {
+        case '3':
+            gameMode = 'expert';
+            break;
+        case '2':
+            gameMode = 'intermediate';
+            break;
+        default:
+            gameMode = 'beginner';
+    }
+}
 // createBoard will generate board in DOM after all objects are placed inside
 function createBoard(offsetValue) {
     // clear whatever might've already been in #board section
@@ -255,46 +288,6 @@ function createBoard(offsetValue) {
         newTile.id = `${i}`;
         boardEl.appendChild(newTile);
     }
-}
-
-
-function getGameMode() {
-    let idArray = document.querySelector('.clicked').id.split('');
-    let modeIdx = idArray[idArray.length - 1];
-    switch (modeIdx) {
-        case '3':
-            gameMode = 'expert';
-            break;
-        case '2':
-            gameMode = 'intermediate';
-            break;
-        default:
-            gameMode = 'beginner';
-    }
-}
-
-
-
-// init function sets up page when web app is first loaded
-init();
-function init() {
-    smiley.setAttribute('src', 'images/smiley.png');
-    playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
-    getGameMode();
-    flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
-    // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
-    offset = DEFAULTS[gameMode].offset;
-    // create board in DOM based on value of offset (css sizing nightmare)
-    createBoard(offset);
-    // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
-    board = Array(offset * offset).fill(0);
-    // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
-    numberOfMines = DEFAULTS[gameMode].numMines;
-    // numberOfMines = 1;
-    setMines();
-    setNumbers();
-    setBlanks();
-    // seeBoard();
 }
 // Mines! 
 function getMineLocations() {
@@ -324,7 +317,7 @@ function createMineObjects() {
 // place 'mine' objects in board array
 function setMines() {
     let mines = createMineObjects();
-    mines.forEach( mineObj => {
+    mines.forEach(mineObj => {
         let id = mineObj.location;
         // change board value to mine
         board[id] = mineObj;
@@ -430,7 +423,7 @@ function renderUnsure(id) {
             break;
         default:
             let flagsOnBoard = 0;
-            board.forEach( boardObj => {
+            board.forEach(boardObj => {
                 boardObj.flagged === 'yes' ? flagsOnBoard++ : flagsOnBoard;
             });
             flagsOnBoard === numberOfMines ? flagsLeftDisplay.textContent = `00${oldNum + 1}` : flagsOnBoard; 
@@ -449,7 +442,7 @@ function renderMine(id, tile) {
     tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     // show location of all other hidden bombs (50% opacity)
-    board.forEach( boardObj => {
+    board.forEach(boardObj => {
         if (boardObj.type === 'mine' && boardObj.location !== id) {
             document.getElementById(`${boardObj.location}`).innerHTML = '<img class="mine-img other-bombs" src="images/mine-img.png" alt="mine">';
         }
@@ -482,7 +475,7 @@ function renderBlank(id) {
 // console.log(blanksAlreadyRendered);
 }
 function renderSingleBlank(id) {
-    board[id].getValidNeighbors().forEach( location => {
+    board[id].getValidNeighbors().forEach(location => {
         // display and change all valid touching tiles as revealed
         document.getElementById(`${location}`).style.backgroundColor = 'rgba(211, 211, 211, 1)';
         document.getElementById(`${location}`).style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
@@ -493,14 +486,13 @@ function renderSingleBlank(id) {
             document.getElementById(`${location}`).innerHTML = `${board[location].value}`;
         }
     });
-    return;
 }
 function findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered) {
-    blanksNeedingRendering.forEach( blankLoc => {
+    blanksNeedingRendering.forEach(blankLoc => {
         // get all valid blank neighbors of rendered tile
         // filter out any blanks that are in blanksAlreadyRendered
         let unrenderedBlankNeighbors = board[blankLoc].blankNeighbors;
-        blanksAlreadyRendered.forEach( location => {
+        blanksAlreadyRendered.forEach(location => {
             if (unrenderedBlankNeighbors.includes(location)) {
                 // remove that value from unrenderedBlankNeighbors
                 // first get index of this value in our array
@@ -509,10 +501,10 @@ function findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered) {
                 unrenderedBlankNeighbors.splice(removalIdx, 1);
             }
         });
-        unrenderedBlankNeighbors.forEach( blankLoc => {
+        unrenderedBlankNeighbors.forEach(blankLoc => {
             // get all valid neighbors of these blanks
             let newNeighbors = board[blankLoc].getValidNeighbors();
-            let checkForHidden = newNeighbors.some( location => {
+            let checkForHidden = newNeighbors.some(location => {
                 return board[location].status === 'hidden';
             });
             // add to blanksNeedingRendering array to be rendered in the next while loop iteration
@@ -539,10 +531,10 @@ function checkWinner() {
 }
 function renderWinner() {
     // find any unflagged, hidden mine tiles and put flags on them!
-    let toAutoFlag = board.filter( boardObj => {
+    let toAutoFlag = board.filter(boardObj => {
         return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
     });
-    toAutoFlag.forEach( boardObj => {
+    toAutoFlag.forEach(boardObj => {
         document.getElementById(`${boardObj.location}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
         boardObj.flagged = 'yes';
     });
@@ -559,7 +551,7 @@ function renderWinner() {
 }
 function newGame() {
     init(gameMode);
-    tiles.forEach( tile => {
+    tiles.forEach(tile => {
         tile.innerHTML = '';
         tile.style.backgroundColor = 'rgba(150, 150, 150, 1)';
     });
@@ -587,9 +579,9 @@ console.log(board);
 // ******************
 
 
-// notes: 
-// -js will work with any gamemode now, but haven't added mode-button functionality
-// -init will only work with default game modes 
+// notes:
+// -the id's ending in 1, 2, and 3 for the modes need to stay explictly defined and at the end of their id string for use in a javascript switch case, so don't touch those id's
+// -init will only work with default game modes, custom mines might need its own init functions
 
 // ******************
 
@@ -603,3 +595,4 @@ console.log(board);
 // styling
 // bomb propagate animation
 // stretch goal: learn how to do a dropdown with smooth animation and overlay for settings
+// sounds, and delayed chain detonation/shaking
