@@ -26,22 +26,14 @@ h1>* {
     margin: 2vmin 0;
 }
 h1>div {
-    border-radius: 1vmin;
     display: flex;
     align-items: center;
     padding: 1vmin;
-    border: 0.2vmin solid dimgray;
-}
-h1>div:first-child {
-    background-color: rgba(150, 150, 150, 1);
-    /* padding: 1vmin; */
-}
-h1>div:last-child {
-    background-color: rgba(255, 0, 0, 0.75);
-    /* padding: 1vmin; */
+    border: 0.5vmin dotted rgba(150, 150, 150, 1);
 }
 h1>div>img {
     height: calc(5px + 3vmin);
+    opacity: 0.6;
 }
 .container {
     display: flex;
@@ -55,12 +47,14 @@ h1>div>img {
     display: flex;
     align-items: center;
     width: 90vmin;
-    background-color: black;
     height: 7.5vmin;
-    position: relative;
 }
-.settings-bar>.border {
-    background-color: rgba(150, 150, 150, 0);
+.mode-hover {
+    display: flex;
+    margin: 0 0 0 4%;
+    align-items: center;
+}
+.mode-hover>.border {
     border: 1px solid rgba(150, 150, 150, 1);
     width: 3vmin;
     height: 3vmin;
@@ -68,31 +62,32 @@ h1>div>img {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 1% 0 4%;
     transition: border 0.3s ease;
 }
-/* ************************************ */
-/* XXX this needs to be fixed */
-.settings-bar>.mode-hover:hover {
+.mode-hover:hover>.border  {
     border: 1px solid lightgray;
-    color: lightgray;
 }
-/* XXX this needs to be fixed */
-/* ************************************ */
-.settings-bar>.border>.fill {
+.border>.fill {
     background-color: rgba(255, 0, 0, 1);
-    border: 1px solid rgba(250, 150, 150, 0);
-    width: 40%;
-    height: 40%;
+    width: 50%;
+    height: 50%;
     border-radius: 50%;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
 }
-.settings-bar>.mode-text {
+/* .mode-hover:hover>.border>.fill  {
+    opacity: 1;
+} */
+.mode-hover>.mode-text {
     color: rgba(150, 150, 150, 1);
     font-size: 3vmin;
     transition: color 0.3s ease;
+    padding: 0 0 0 5%;
+    transition: color 0.3s ease;
+}
+.mode-hover:hover>.mode-text  {
+    color: lightgray;
 }
 .status-bar {
     display: flex;
