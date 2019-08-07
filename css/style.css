@@ -164,7 +164,7 @@ h1>div>img {
 .reset-board-btn {
     background-color: rgba(255, 0, 0, 0.2);
     border: none;
-    margin: 1vmin 0 0 3%;
+    margin: 1vmin 0 0 4%;
     color: rgba(150, 150, 150, 1);
     border-radius: 2vmin;
     padding: 1vmin 2vmin;
@@ -181,11 +181,12 @@ h1>div>img {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    width: 60vmin;
+    width: 50vmin;
     background-color: rgba(150, 150, 150, 1);
     padding: 1vmin 0;
     border: solid rgba(105, 105, 105, 1);
     border-width: 0.5vmin 0.5vmin 0.05vmin 0.5vmin;
+    margin: 5% 0 0 0;
 }
 .flag-tracker, .timer {
     font-size: calc(10px + 3vmin);
@@ -221,7 +222,7 @@ h1>div>img {
     border: 0.3vmin outset rgba(105, 105, 105, 1);
     width: 100%;
     height: 100%;
-    border-radius: 5%;
+    border-radius: 0.4vmin;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -277,14 +277,14 @@ function createBoard(offsetValue) {
     // clear whatever might've already been in #board section
     boardEl.innerHTML = '';
     // set properties of boardEl
-    boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, ${60 / offsetValue}vmin [col-start])`;
-    boardEl.style.gridTemplateRows = `repeat(${offsetValue}, ${60 / offsetValue}vmin [row-start])`;
+    boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, ${50 / offsetValue}vmin [col-start])`;
+    boardEl.style.gridTemplateRows = `repeat(${offsetValue}, ${50 / offsetValue}vmin [row-start])`;
     // generate and place tiles in boardEl
     let numTiles = offsetValue * offsetValue;
     for (let i = 0; i < numTiles; i++) {
         let newTile = document.createElement('div');
         newTile.className = 'tile';
-        newTile.style.fontSize = `${(-5 / 16) * offsetValue + 9.5}vmin`;
+        newTile.style.fontSize = `${(-0.26) * offsetValue + 7.9}vmin`;
         newTile.id = `${i}`;
         boardEl.appendChild(newTile);
     }
