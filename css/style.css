@@ -17,7 +17,7 @@ h1 {
     background-color: rgba(0, 0, 0, 0.75);
     color: rgba(211, 211, 211, 1);
     border-radius: 2vmin 2vmin 0 0;
-    width: 90vmin;
+    width: 95vmin;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -46,16 +46,16 @@ h1>div>img {
 .settings-bar {
     display: flex;
     align-items: center;
-    width: 90vmin;
+    width: 95vmin;
     min-height: 7.5vmin;
 }
 .mode-hover {
     display: flex;
-    margin: 0 0 0 4%;
+    margin: 0 0 0 2%;
     align-items: center;
 }
 .mode-hover>.border {
-    border: 1px solid rgb(150, 150, 150);
+    border: 0.75vmin solid rgba(150, 150, 150, 1);
     width: 3vmin;
     height: 3vmin;
     border-radius: 50%;
@@ -65,13 +65,13 @@ h1>div>img {
     transition: border 0.3s ease;
 }
 .mode-hover:hover>.border  {
-    border: 1px solid rgb(211, 211, 211);
+    border: 0.25vmin solid rgba(211, 211, 211, 1);
 }
 .mode-hover>.border.clicked {
-    border: 1px solid rgba(255, 0, 0, 1);
+    border: 0.25vmin solid rgba(255, 0, 0, 1);
 }
 .border>.fill {
-    background-color: rgb(255, 0, 0);
+    background-color: rgba(255, 0, 0, 1);
     width: 50%;
     height: 50%;
     border-radius: 50%;
@@ -83,17 +83,99 @@ h1>div>img {
     opacity: 1;
 }
 .mode-hover>.mode-text {
-    color: rgb(150, 150, 150);
+    color: rgba(150, 150, 150, 1);
     font-size: 3vmin;
     transition: color 0.3s ease;
     padding: 0 0 0 5%;
     transition: color 0.3s ease;
 }
 .mode-hover:hover>.mode-text  {
-    color: rgb(211, 211, 211);
+    color: rgba(211, 211, 211, 1);
 }
 .mode-hover>.mode-text.clicked {
     color: rgba(255, 0, 0, 1);
+}
+.num-mines-choices {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 0 0 0 2%;
+    height: 5vmin;
+}
+.num-mines-hover {
+    display: flex;
+    align-items: center;
+}
+.num-mines-hover>.small-border {
+    border: 0.36vmin solid rgba(150, 150, 150, 1);
+    width: 1.5vmin;
+    height: 1.5vmin;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border 0.3s ease;
+}
+.num-mines-hover:hover>.small-border  {
+    border: 0.36vmin solid rgba(211, 211, 211, 1);
+}
+.num-mines-hover>.small-border.clicked {
+    border: 0.36vmin solid rgba(255, 0, 0, 1);
+}
+.small-border>.small-fill {
+    background-color: rgba(255, 0, 0, 1);
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.small-border>.small-fill.clicked {
+    opacity: 1;
+}
+.num-mines-hover>.num-mines-text {
+    color: rgba(150, 150, 150, 1);
+    font-size: 1.5vmin;
+    transition: color 0.3s ease;
+    padding: 0 0 0 5%;
+    transition: color 0.3s ease;
+}
+.num-mines-hover:hover>.num-mines-text  {
+    color: rgba(211, 211, 211, 1);
+}
+.num-mines-hover>.num-mines-text.clicked {
+    color: rgba(255, 0, 0, 1);
+}
+.num-mines-input {
+    border: 0.5vmin solid rgba(150, 150, 150, 1);
+    border-radius: 1vmin;
+    background-color: rgba(0, 0, 0, 0);
+    margin: 0 0 0 2%;
+    color: rgba(211, 211, 211, 1);
+    text-align: center;
+}
+.num-mines-input::-webkit-inner-spin-button, 
+.num-mines-input::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+.reset-board-btn {
+    background-color: rgba(255, 0, 0, 0.2);
+    border: none;
+    margin: 1vmin 0 0 3%;
+    color: rgba(150, 150, 150, 1);
+    border-radius: 2vmin;
+    padding: 1vmin 2vmin;
+    flex-shrink: 1;
+}
+.reset-board-btn.ready {
+    background-color: rgba(255, 0, 0, 0.8);
+    color: rgba(211, 211, 211, 1);
+}
+.reset-board-btn:active {
+    opacity: 0.6;
 }
 .status-bar {
     display: flex;

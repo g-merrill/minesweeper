@@ -545,7 +545,7 @@ function renderWinner() {
     // create a <p> inside the div that has semitransparent black background, solid white text
     let winnerDiv = document.createElement('div');
     winnerDiv.className = 'win-message';
-    winnerDiv.innerHTML = `<p>You. Are. Awesome!! You have successfully cleared the minefield!</p>`;
+    winnerDiv.innerHTML = `<p>You. are. AWESOME!! You have successfully cleared the minefield!</p>`;
     boardEl.appendChild(winnerDiv);
     // update winner variable
     playerStatus = 'won';
@@ -598,3 +598,6 @@ console.log(board);
 // bomb propagate animation
 // stretch goal: learn how to do a dropdown with smooth animation and overlay for settings
 // sounds, and delayed chain detonation/shaking
+// customizable color themes
+// how-to-play tab that pulls up from below the minefield would be nice
+// have the number input have a horizontal scroll bar that drops down that can quickly set the number of mines between 1-575
