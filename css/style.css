@@ -16,8 +16,8 @@ h1 {
     margin: 2vh 0 0;
     background-color: rgba(0, 0, 0, 0.75);
     color: lightgray;
-    border-radius: 2vmin;
-    width: 60vmin;
+    border-radius: 2vmin 2vmin 0 0;
+    width: 90vmin;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -47,30 +47,52 @@ h1>div>img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: black;
+    border-radius: 0 0 2vmin 2vmin;
+    padding: 0 0 12vmin;
 }
-.nav-bar {
+.settings-bar {
     display: flex;
     align-items: center;
-    width: 60vmin;
-    margin: 1vh 0 0;
-}
-.settings-button {
+    width: 90vmin;
     background-color: black;
-    border-radius: 2vmin;
-    padding: 2vmin 3vmin;
+    height: 7.5vmin;
+    position: relative;
+}
+.settings-bar>.border {
+    background-color: rgba(150, 150, 150, 0);
+    border: 1px solid rgba(150, 150, 150, 1);
+    width: 3vmin;
+    height: 3vmin;
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0 1% 0 4%;
+    transition: border 0.3s ease;
 }
-.settings-arrow {
-    border-top: 2vmin solid lightgray;
-    border-left: 2vmin solid transparent;
-    border-right: 2vmin solid transparent;
-}
-.settings-text {
+/* ************************************ */
+/* XXX this needs to be fixed */
+.settings-bar>.mode-hover:hover {
+    border: 1px solid lightgray;
     color: lightgray;
-    margin: 0 0 0 3vmin;
+}
+/* XXX this needs to be fixed */
+/* ************************************ */
+.settings-bar>.border>.fill {
+    background-color: rgba(255, 0, 0, 1);
+    border: 1px solid rgba(250, 150, 150, 0);
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.settings-bar>.mode-text {
+    color: rgba(150, 150, 150, 1);
     font-size: 3vmin;
+    transition: color 0.3s ease;
 }
 .status-bar {
     display: flex;
@@ -78,7 +100,6 @@ h1>div>img {
     align-items: center;
     width: 60vmin;
     background-color: rgba(150, 150, 150, 1);
-    margin: 1vh 0 0;
     padding: 1vmin 0;
     border-top: 0.5vmin solid dimgray;
     border-right: 0.5vmin solid dimgray;
@@ -97,7 +118,7 @@ h1>div>img {
 .smiley {
     width: 25%;
     background-color: rgba(150, 150, 150, 1);
-    border: 3px solid rgba(105, 105, 105, 0.75);
+    border: 0.5vmin solid rgba(105, 105, 105, 0.75);
     border-radius: calc(5px + 1vmin);
     padding: 1vmin;
     background-color: black;
@@ -106,7 +127,7 @@ h1>div>img {
     background-color: rgba(105, 105, 105, 0.75);
 }
 .smiley:hover {
-    border: 3px solid rgba(255, 0, 0, 0.75);
+    border: 0.5vmin solid rgba(255, 0, 0, 0.75);
 }
 .board {
     display: grid;

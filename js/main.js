@@ -187,7 +187,6 @@ let gameMode = 'beginner'; // beginner, intermediate, expert, or custom
 
 // cached elements
 let boardEl = document.getElementById('board');
-let settingsButton = document.getElementById('settings-button');
 let flagsLeftDisplay = document.getElementById('flag-tracker');
 let smiley = document.getElementById('smiley');
 let timerDisplay = document.getElementById('timer');
@@ -324,6 +323,7 @@ function handleClickLeft(evt) {
     let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
     if (board[id].status === 'revealed') return;
     render(id);
+    console.log(evt);
 }
 function handleClickRight(evt) {
     evt.preventDefault();
@@ -569,4 +569,4 @@ console.log(board);
 // readme
 // styling
 // bomb propagate animation
-// 
+// stretch goal: learn how to do a dropdown with smooth animation and overlay for settings
