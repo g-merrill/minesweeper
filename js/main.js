@@ -251,8 +251,8 @@ function init() {
     // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
     // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
-    // numberOfMines = DEFAULTS[gameMode].numMines;
-    numberOfMines = 1;
+    numberOfMines = DEFAULTS[gameMode].numMines;
+    // numberOfMines = 1;
     setMines();
     setNumbers();
     setBlanks();
@@ -345,6 +345,7 @@ function setBlanks() {
 function handleClickLeft(evt) {
     if (playerStatus === 'lost') return;
     let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
+    if (board[id].flagged === 'yes') return;
     if (board[id].status === 'revealed') return;
     render(id);
 }
@@ -544,7 +545,7 @@ function renderWinner() {
     // create a <p> inside the div that has semitransparent black background, solid white text
     let winnerDiv = document.createElement('div');
     winnerDiv.className = 'win-message';
-    winnerDiv.innerHTML = `<p>Congrats!! You have successfully cleared the minefield!</p>`;
+    winnerDiv.innerHTML = `<p>You. Are. Awesome!! You have successfully cleared the minefield!</p>`;
     boardEl.appendChild(winnerDiv);
     // update winner variable
     playerStatus = 'won';
@@ -578,6 +579,7 @@ console.log(board);
 
 // ******************
 
+//bug to fix, flag placed then clicked and revealed, can't remove flag...
 
 // notes:
 // -the id's ending in 1, 2, and 3 for the modes need to stay explictly defined and at the end of their id string for use in a javascript switch case, so don't touch those id's
