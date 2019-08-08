@@ -10,14 +10,15 @@ Playing minesweeper on my family's old, slow computer during the 2000's was one 
 There are only a handful of things to keep in mind while playing minesweeper:
 
   * If you click a **mine, _you lose!_**
-<!-- imgur link -->
+  ![loss-img](https://i.imgur.com/bTzUVPo.png)
 
   * Each time you click a safe tile, it may reveal a **number** beneath it of a certain color.  This number tells you how many mines are touching that tile (*including diagonally*).  
-<!-- imgur link -->
-
 
   * If you click a safe tile that is **blank**, you're in luck!  The game will automatically reveal all nearby blank tiles until it hits a number tile.
 <!-- imgur link -->
+  ![numbers-and-blanks-img](https://i.imgur.com/2Buqy3Y.png)
+
+  * Reset the game with its current settings by clicking the smiley face, or change the game settings along the top of the board!
 
 
 That's about it!  [Head on out there and clear some minefields!](https://g-merrill.github.io/minesweeper/)
