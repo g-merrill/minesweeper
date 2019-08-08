@@ -4,7 +4,6 @@
 Minesweeper is a classic puzzle game where the objective is to click and reveal safe tiles while avoiding and simultaneously flagging the dangerous buried mine tiles.
 Playing minesweeper on my family's old, slow computer during the 2000's was one of my favorite pastimes growing up!
 
----
 
 ## Getting Started
 
@@ -23,13 +22,11 @@ There are only a handful of things to keep in mind while playing minesweeper:
 
 That's about it!  [Head on out there and clear some minefields!](https://g-merrill.github.io/minesweeper/)
 
----
 
 ## Technologies Used
 
 JavaScript, HTML, and CSS
 
----
 
 ## Next Steps
 
