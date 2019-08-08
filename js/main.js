@@ -24,6 +24,7 @@ const DEFAULTS = {
     }
 };
 
+// classes
 class Tile {
     constructor(location) {
         // location references both the dom id and the array id
@@ -182,7 +183,8 @@ class Blank extends Number {
 
 
 // state variables
-let board, offset, numberOfMines, playerStatus, gameMode;
+let board, offset, numberOfMines, playerStatus, gameMode, timeCount, nIntervId;
+let timerStart = 'false';
 
 // cached elements
 let boardEl = document.getElementById('board');
@@ -209,18 +211,39 @@ defaultMinesBtn.addEventListener('click', defaultMinesClick);
 customMinesBtn.addEventListener('click', customMinesClick);
 customBoardBtn.addEventListener('click', customBoardClick);
 
-// document.querySelector('.settings-bar').addEventListener('click', checkEvtTarget);
-// function checkEvtTarget(evt) {
-//     console.log(evt.target);
-// }
-
-
 
 // functions
 
-
-
-
+// settings bar functions
+function beginnerModeClick() {
+    if (beginnerBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    beginnerBtn.classList.add('clicked');
+    offset = DEFAULTS.beginner.offset;
+    numberOfMines = DEFAULTS.beginner.numMines;
+    init();
+}
+function intermediateModeClick() {
+    if (intermediateBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    intermediateBtn.classList.add('clicked');
+    offset = DEFAULTS.intermediate.offset;
+    numberOfMines = DEFAULTS.intermediate.numMines;
+    init();
+}
+function expertModeClick() {
+    if (expertBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    expertBtn.classList.add('clicked');
+    offset = DEFAULTS.expert.offset;
+    numberOfMines = DEFAULTS.expert.numMines;
+    init();
+}
+function modeClearClicked() {
+    beginnerBtn.classList.remove('clicked');
+    intermediateBtn.classList.remove('clicked');
+    expertBtn.classList.remove('clicked');
+}
 function defaultMinesClick() {
     if (defaultMinesBtn.classList.contains('clicked')) return;
     // deactivate num input
@@ -255,27 +278,6 @@ function customBoardClick() {
     // what should happen if placemines btn is clicked!
     customInit(customNumberOfMines);
 }
-
-function customInit(minesAmount) {
-    smiley.setAttribute('src', 'images/smiley.png');
-    playerStatus = 'pregame';
-    getGameMode();
-    flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
-    offset = DEFAULTS[gameMode].offset;
-    createBoard(offset);
-    board = Array(offset * offset).fill(0);
-    numberOfMines = minesAmount;
-    setMines();
-    setNumbers();
-    setBlanks();
-}
-
-
-
-
-
-
-// **********************
 function customValueCheck(val) {
     let mode = document.querySelector('.mode-hover.clicked').id;
     if (parseInt(val)) {
@@ -295,52 +297,28 @@ function customValueCheck(val) {
         return false;
     }
 }
-// **********************
-
-// 
-
-
-
-
-
-
-
-
-function beginnerModeClick() {
-    // return if already clicked (or set clickable to none)
-    if (beginnerBtn.classList.contains('clicked')) return;
-    modeClearClicked();
-    beginnerBtn.classList.add('clicked');
-    offset = DEFAULTS.beginner.offset;
-    numberOfMines = DEFAULTS.beginner.numMines;
-    init();
-}
-function intermediateModeClick() {
-    if (intermediateBtn.classList.contains('clicked')) return;
-    modeClearClicked();
-    intermediateBtn.classList.add('clicked');
-    offset = DEFAULTS.intermediate.offset;
-    numberOfMines = DEFAULTS.intermediate.numMines;
-    init();
-}
-function expertModeClick() {
-    if (expertBtn.classList.contains('clicked')) return;
-    modeClearClicked();
-    expertBtn.classList.add('clicked');
-    offset = DEFAULTS.expert.offset;
-    numberOfMines = DEFAULTS.expert.numMines;
-    init();
-}
-function modeClearClicked() {
-    beginnerBtn.classList.remove('clicked');
-    intermediateBtn.classList.remove('clicked');
-    expertBtn.classList.remove('clicked');
+function customInit(minesAmount) {
+    smiley.setAttribute('src', 'images/smiley.png');
+    window.clearInterval(nIntervId);
+    timerDisplay.textContent = '000';
+    playerStatus = 'pregame';
+    getGameMode();
+    flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
+    offset = DEFAULTS[gameMode].offset;
+    createBoard(offset);
+    board = Array(offset * offset).fill(0);
+    numberOfMines = minesAmount;
+    setMines();
+    setNumbers();
+    setBlanks();
 }
 
 // init function sets up page when web app is first loaded
 init();
 function init() {
     smiley.setAttribute('src', 'images/smiley.png');
+    window.clearInterval(nIntervId);
+    timerDisplay.textContent = '000';
     playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
     getGameMode();
     flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
@@ -447,7 +425,26 @@ function handleClickLeft(evt) {
     let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
     if (board[id].flagged === 'yes') return;
     if (board[id].status === 'revealed') return;
+    // cycle through board, if no tiles are revealed, set player status to playing, and start timer function
+    if (board.every(boardObj => boardObj.status === 'hidden')) {
+        playerStatus = 'playing';
+        timeCount = 0;
+        nIntervId = window.setInterval(timer, 1000);
+    }
     render(id);
+}
+function timer() {
+    timeCount += 1;
+    if (timeCount < 10) {
+        timerDisplay.textContent = `00${timeCount}`;
+    } else if (timeCount < 100) {
+        timerDisplay.textContent = `0${timeCount}`;
+    } else if (timeCount < 999) {
+        timerDisplay.textContent = `${timeCount}`;
+    } else {
+        playerStatus = 'lost';
+        smiley.setAttribute('src', 'images/smiley-loss.png');
+    }
 }
 function handleClickRight(evt) {
     evt.preventDefault();
@@ -538,6 +535,7 @@ function renderRemoveMark(id) {
     board[id].flagged = 'no';
 }
 function renderMine(id, tile) {
+    window.clearInterval(nIntervId);
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'exploded';
     tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
@@ -631,6 +629,7 @@ function checkWinner() {
     }
 }
 function renderWinner() {
+    window.clearInterval(nIntervId);
     // find any unflagged, hidden mine tiles and put flags on them!
     let toAutoFlag = board.filter(boardObj => {
         return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
@@ -706,3 +705,4 @@ console.log(board);
 // how-to-play tab that pulls up from below the minefield would be nice
 // have the number input have a horizontal scroll bar that drops down that can quickly set the number of mines between 1-575
 // AI opponent to race against?!?!?!?! or rng friend?  activate drone!
+// end of page

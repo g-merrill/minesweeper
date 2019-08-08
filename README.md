@@ -32,32 +32,8 @@ JavaScript, HTML, and CSS
 ## Next Steps
 
   * Implement some game sounds
+  * Add a fastest time display
   * Add custom color/background themes
   * Add a helper bot that reveals one random number tile
   * Add a risky bot that reveals one blank and one completely random available tile
   * Add some additional win and loss animations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Screenshot(s): Images of your actual game. -->
-<!--  Technologies Used: List of the technologies used, e.g., JavaScript, HTML, CSS... -->
-<!-- Getting Started: In this section include the link to your deployed game and any instructions you deem important. -->
-<!-- Next Steps: Planned future enhancements (icebox items). -->
