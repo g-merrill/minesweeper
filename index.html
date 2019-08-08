@@ -20,30 +20,30 @@
     </h1>
     <div class="container">
         <section class="settings-bar">
-            <div id="beginner-btn" class="mode-hover">
-                <div id="border1" class="border clicked">
-                    <div id="fill1" class="fill clicked"></div>
+            <div id="beginner" class="mode-hover clicked">
+                <div id="border1" class="border">
+                    <div id="fill1" class="fill"></div>
                 </div>
-                <p id="text1" class="mode-text clicked">Beginner</p>
+                <p id="text1" class="mode-text">Beginner</p>
             </div>
-            <div id="intermediate-btn" class="mode-hover">
+            <div id="intermediate" class="mode-hover">
                 <div id="border2" class="border">
                     <div id="fill2" class="fill"></div>
                 </div>
                 <p id="text2" class="mode-text" >Intermediate</p>
             </div>
-            <div id="expert-btn" class="mode-hover">
+            <div id="expert" class="mode-hover">
                 <div id="border3" class="border">
                     <div id="fill3" class="fill"></div>
                 </div>
                 <p id="text3" class="mode-text" >Expert</p>
             </div>
             <div class="num-mines-choices">
-                <div id="default-mines-btn" class="num-mines-hover">
-                    <div id="small-border1" class="small-border clicked">
-                        <div id="small-fill1" class="small-fill clicked"></div>
+                <div id="default-mines-btn" class="num-mines-hover clicked">
+                    <div id="small-border1" class="small-border">
+                        <div id="small-fill1" class="small-fill"></div>
                     </div>
-                    <p id="small-text1" class="num-mines-text clicked" >Default</p>
+                    <p id="small-text1" class="num-mines-text" >Default</p>
                 </div>
                 <div id="custom-mines-btn" class="num-mines-hover">
                     <div id="small-border2" class="small-border">
@@ -52,8 +52,8 @@
                     <p id="small-text2" class="num-mines-text" >Custom</p>
                 </div>
             </div>
-            <input class="num-mines-input" type="number" min="1" max="575">
-            <button class="reset-board-btn">Reset Board</button>
+            <input id="num-mines-input-box" class="num-mines-input" type="number" min="1" max="575">
+            <button id="custom-board-btn" class="set-custom-board">Place Mines!</button>
         </section>
         <section class="status-bar">
             <div id="flag-tracker" class="flag-tracker">010</div>

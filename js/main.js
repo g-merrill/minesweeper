@@ -190,53 +190,153 @@ let flagsLeftDisplay = document.getElementById('flag-tracker');
 let smiley = document.getElementById('smiley');
 let timerDisplay = document.getElementById('timer');
 let tiles = document.querySelectorAll('.tile');
-let beginnerBtn = document.getElementById('beginner-btn');
-let intermediateBtn = document.getElementById('intermediate-btn');
-let expertBtn = document.getElementById('expert-btn');
+let beginnerBtn = document.getElementById('beginner');
+let intermediateBtn = document.getElementById('intermediate');
+let expertBtn = document.getElementById('expert');
+let defaultMinesBtn = document.getElementById('default-mines-btn');
+let customMinesBtn = document.getElementById('custom-mines-btn');
+let customMinesInput = document.getElementById('num-mines-input-box');
+let customBoardBtn = document.getElementById('custom-board-btn');
 
 // event listeners
 boardEl.addEventListener('click', handleClickLeft);
 boardEl.addEventListener('contextmenu', handleClickRight, false);
 smiley.addEventListener('click', newGame);
-beginnerBtn.addEventListener('click', beginnerMode);
-intermediateBtn.addEventListener('click', intermediateMode);
-expertBtn.addEventListener('click', expertMode);
+beginnerBtn.addEventListener('click', beginnerModeClick);
+intermediateBtn.addEventListener('click', intermediateModeClick);
+expertBtn.addEventListener('click', expertModeClick);
+defaultMinesBtn.addEventListener('click', defaultMinesClick);
+customMinesBtn.addEventListener('click', customMinesClick);
+customBoardBtn.addEventListener('click', customBoardClick);
+
+// document.querySelector('.settings-bar').addEventListener('click', checkEvtTarget);
+// function checkEvtTarget(evt) {
+//     console.log(evt.target);
+// }
+
 
 
 // functions
-function beginnerMode() {
-    offset = DEFAULTS.beginner.offset;
-    numberOfMines = DEFAULTS.beginner.numMines;
-    clearRedStyling();
-    setRedStyling(1);
-    init();
+
+
+
+
+function defaultMinesClick() {
+    if (defaultMinesBtn.classList.contains('clicked')) return;
+    // deactivate num input
+    customMinesInput.classList.remove('activated');
+    // clear clicked on custom
+    customMinesBtn.classList.remove('clicked');
+    // apply clicked on default
+    defaultMinesBtn.classList.add('clicked');
+    // revert place mines button to !ready
+    customBoardBtn.classList.remove('ready');
 }
-function intermediateMode() {
-    offset = DEFAULTS.intermediate.offset;
-    numberOfMines = DEFAULTS.intermediate.numMines;
-    clearRedStyling();
-    setRedStyling(2);
-    init();
+function customMinesClick() {
+    if (customMinesBtn.classList.contains('clicked')) return;
+    // activate num input
+    customMinesInput.classList.add('activated');
+    // clear clicked on default
+    defaultMinesBtn.classList.remove('clicked');
+    // apply clicked on custom
+    customMinesBtn.classList.add('clicked');
+    // set place mines button to ready
+    customBoardBtn.classList.add('ready');
 }
-function expertMode() {
-    offset = DEFAULTS.expert.offset;
-    numberOfMines = DEFAULTS.expert.numMines;
-    clearRedStyling();
-    setRedStyling(3);
-    init();
+function customBoardClick() {
+    customMinesInput.classList.remove('error');
+    let customValue = customMinesInput.value;
+    if (!customValueCheck(customValue)) {
+        customMinesInput.classList.add('error');
+        return;
+    };
+    let customNumberOfMines = parseInt(customValue);
+    console.log(customNumberOfMines, typeof customNumberOfMines);
+    // what should happen if placemines btn is clicked!
+    customInit(customNumberOfMines);
 }
-function clearRedStyling() {
-    for (let i = 1; i <=3; i++) {
-        document.getElementById(`border${i}`).classList.remove('clicked');
-        document.getElementById(`text${i}`).classList.remove('clicked');
-        document.getElementById(`fill${i}`).classList.remove('clicked');
+
+function customInit(minesAmount) {
+    smiley.setAttribute('src', 'images/smiley.png');
+    playerStatus = 'pregame';
+    getGameMode();
+    flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
+    offset = DEFAULTS[gameMode].offset;
+    createBoard(offset);
+    board = Array(offset * offset).fill(0);
+    numberOfMines = minesAmount;
+    setMines();
+    setNumbers();
+    setBlanks();
+}
+
+
+
+
+
+
+// **********************
+function customValueCheck(val) {
+    let mode = document.querySelector('.mode-hover.clicked').id;
+    if (parseInt(val)) {
+        val = parseInt(val);
+        switch (mode) {
+            case 'expert':
+                if (val > 0 && val < 576) return true;
+                return false;
+            case 'intermediate':
+                if (val > 0 && val < 256) return true;
+                return false;
+            case 'beginner':
+                if (val > 0 && val < 64) return true;
+                return false;
+        }
+    } else {
+        return false;
     }
 }
-function setRedStyling(modeIdx) {
-    document.getElementById(`border${modeIdx}`).classList.toggle('clicked');
-    document.getElementById(`text${modeIdx}`).classList.toggle('clicked');
-    document.getElementById(`fill${modeIdx}`).classList.toggle('clicked');    
+// **********************
+
+// 
+
+
+
+
+
+
+
+
+function beginnerModeClick() {
+    // return if already clicked (or set clickable to none)
+    if (beginnerBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    beginnerBtn.classList.add('clicked');
+    offset = DEFAULTS.beginner.offset;
+    numberOfMines = DEFAULTS.beginner.numMines;
+    init();
 }
+function intermediateModeClick() {
+    if (intermediateBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    intermediateBtn.classList.add('clicked');
+    offset = DEFAULTS.intermediate.offset;
+    numberOfMines = DEFAULTS.intermediate.numMines;
+    init();
+}
+function expertModeClick() {
+    if (expertBtn.classList.contains('clicked')) return;
+    modeClearClicked();
+    expertBtn.classList.add('clicked');
+    offset = DEFAULTS.expert.offset;
+    numberOfMines = DEFAULTS.expert.numMines;
+    init();
+}
+function modeClearClicked() {
+    beginnerBtn.classList.remove('clicked');
+    intermediateBtn.classList.remove('clicked');
+    expertBtn.classList.remove('clicked');
+}
+
 // init function sets up page when web app is first loaded
 init();
 function init() {
@@ -259,7 +359,7 @@ function init() {
     // seeBoard();
 }
 function getGameMode() {
-    let idArray = document.querySelector('.clicked').id.split('');
+    let idArray = document.querySelector('.mode-hover.clicked>.border').id.split('');
     let modeIdx = idArray[idArray.length - 1];
     switch (modeIdx) {
         case '3':
@@ -551,11 +651,15 @@ function renderWinner() {
     playerStatus = 'won';
 }
 function newGame() {
-    init(gameMode);
     tiles.forEach(tile => {
         tile.innerHTML = '';
         tile.style.backgroundColor = 'rgba(150, 150, 150, 1)';
     });
+    if (customMinesBtn.classList.contains('clicked')) {
+        customBoardClick();
+    } else {
+        init();
+    }
     // seeBoard();
 }
 
@@ -601,3 +705,4 @@ console.log(board);
 // customizable color themes
 // how-to-play tab that pulls up from below the minefield would be nice
 // have the number input have a horizontal scroll bar that drops down that can quickly set the number of mines between 1-575
+// AI opponent to race against?!?!?!?! or rng friend?  activate drone!

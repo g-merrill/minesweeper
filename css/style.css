@@ -10,6 +10,7 @@ body {
     align-items: center;
     height: 100vh;
     background-color: rgba(150, 150, 150, 1);
+    min-width: 245px;
 }
 h1 {
     font-size: calc(5px + 3vmin);
@@ -54,6 +55,9 @@ h1>div>img {
     margin: 0 0 0 2%;
     align-items: center;
 }
+.mode-hover>*:active {
+    pointer-events: none;
+}
 .mode-hover>.border {
     border: 0.75vmin solid rgba(150, 150, 150, 1);
     width: 3vmin;
@@ -62,12 +66,12 @@ h1>div>img {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: border 0.3s ease;
+    transition: border 0.1s ease;
 }
 .mode-hover:hover>.border  {
     border: 0.25vmin solid rgba(211, 211, 211, 1);
 }
-.mode-hover>.border.clicked {
+.mode-hover.clicked>.border {
     border: 0.25vmin solid rgba(255, 0, 0, 1);
 }
 .border>.fill {
@@ -76,23 +80,22 @@ h1>div>img {
     height: 50%;
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.1s ease;
     pointer-events: none;
 }
-.border>.fill.clicked {
+.mode-hover.clicked .fill {
     opacity: 1;
 }
 .mode-hover>.mode-text {
     color: rgba(150, 150, 150, 1);
     font-size: 3vmin;
-    transition: color 0.3s ease;
+    transition: color 0.1s ease;
     padding: 0 0 0 5%;
-    transition: color 0.3s ease;
 }
 .mode-hover:hover>.mode-text  {
     color: rgba(211, 211, 211, 1);
 }
-.mode-hover>.mode-text.clicked {
+.mode-hover.clicked>.mode-text {
     color: rgba(255, 0, 0, 1);
 }
 .num-mines-choices {
@@ -102,7 +105,6 @@ h1>div>img {
     align-items: flex-start;
     margin: 0 0 0 2%;
     height: 5vmin;
-    visibility: hidden;
 }
 .num-mines-hover {
     display: flex;
@@ -116,12 +118,12 @@ h1>div>img {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: border 0.3s ease;
+    transition: border 0.1s ease;
 }
 .num-mines-hover:hover>.small-border  {
     border: 0.36vmin solid rgba(211, 211, 211, 1);
 }
-.num-mines-hover>.small-border.clicked {
+.num-mines-hover.clicked>.small-border {
     border: 0.12vmin solid rgba(255, 0, 0, 1);
 }
 .small-border>.small-fill {
@@ -130,32 +132,30 @@ h1>div>img {
     height: 50%;
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.1s ease;
     pointer-events: none;
 }
-.small-border>.small-fill.clicked {
+.num-mines-hover.clicked .small-fill {
     opacity: 1;
 }
 .num-mines-hover>.num-mines-text {
     color: rgba(150, 150, 150, 1);
     font-size: 1.5vmin;
-    transition: color 0.3s ease;
+    transition: color 0.1s ease;
     padding: 0 0 0 5%;
-    transition: color 0.3s ease;
 }
 .num-mines-hover:hover>.num-mines-text  {
     color: rgba(211, 211, 211, 1);
 }
-.num-mines-hover>.num-mines-text.clicked {
+.num-mines-hover.clicked>.num-mines-text {
     color: rgba(255, 0, 0, 1);
 }
 .num-mines-input {
     border: 0.5vmin solid rgba(0, 0, 0, 0);
     border-radius: 1vmin;
-    background-color: rgba(150, 150, 150, 1);
+    background-color: rgba(38, 38, 38, 1);
     margin: 0 0 0 2%;
     pointer-events: none;
-    visibility: hidden;
 }
 .num-mines-input.activated {
     border: 0.5vmin solid rgba(211, 211, 211, 1);
@@ -164,26 +164,29 @@ h1>div>img {
     text-align: center;
     pointer-events: fill;
 }
+.num-mines-input.activated.error {
+    border: 0.5vmin solid rgba(255, 0, 0, 1);
+}
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }
-.reset-board-btn {
+.set-custom-board {
     background-color: rgba(255, 0, 0, 0.2);
     border: none;
     margin: 1vmin 0 0 4%;
     color: rgba(150, 150, 150, 1);
     border-radius: 2vmin;
     padding: 1vmin 2vmin;
-    flex-shrink: 1;
-    visibility: hidden;
+    pointer-events: none;
 }
-.reset-board-btn.ready {
+.set-custom-board.ready {
     background-color: rgba(255, 0, 0, 0.8);
     color: rgba(211, 211, 211, 1);
+    pointer-events: fill;
 }
-.reset-board-btn:active {
+.set-custom-board:active {
     opacity: 0.6;
 }
 .status-bar {
