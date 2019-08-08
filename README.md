@@ -9,7 +9,7 @@ Playing minesweeper on my family's old, slow computer during the 2000's was one 
 
 There are only a handful of things to keep in mind while playing minesweeper:
 
-⋅⋅* If you click a **mine**, _you lose!_** 
+⋅⋅* If you click a **mine, _you lose!_**
 <!-- imgur link -->
 
 ⋅⋅* Each time you click a safe tile, it may reveal a **number** beneath it of a certain color.  This number tells you how many mines are touching that tile (*including diagonally*).  
