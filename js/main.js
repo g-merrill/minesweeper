@@ -37,7 +37,7 @@ class Tile {
         // function that returns the actual number of tiles this tile is touching
         let tileLocation = this.location;
         let validNeighbors;
-        // tiles that need specialized neighbor algorithms:
+        // tiles that need specialized neighbor equations:
         let corner = false;
         let border = false;
         // get neighbors of corner tiles
@@ -170,7 +170,7 @@ class Blank extends Number {
         this.blankNeighbors = this.getBlankNeighbors();
     }
     getBlankNeighbors() {
-        // function that returns location of any blank tiles touching this one on the top, bottom, left, or right
+        // function that returns location of any blank tiles touching this one
         let validNeighbors = this.getValidNeighbors();
         let blankNeighbors = [];
         validNeighbors.forEach(neighbor => {
@@ -185,7 +185,7 @@ class Blank extends Number {
 
 // state variables
 let board, offset, numberOfMines, playerStatus, gameMode, timeCount, nIntervId;
-let timerStart = 'false';
+
 
 // cached elements
 let boardEl = document.getElementById('board');
@@ -200,6 +200,7 @@ let defaultMinesBtn = document.getElementById('default-mines-btn');
 let customMinesBtn = document.getElementById('custom-mines-btn');
 let customMinesInput = document.getElementById('num-mines-input-box');
 let customBoardBtn = document.getElementById('custom-board-btn');
+
 
 // event listeners
 boardEl.addEventListener('click', handleClickLeft);
@@ -319,18 +320,15 @@ function init() {
     smiley.setAttribute('src', 'images/smiley.png');
     clearInterval(nIntervId);
     timerDisplay.textContent = '000';
-    playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
+    playerStatus = 'pregame';  // won, lost, pregame, or playing (used when timer function is set up)
     getGameMode();
     flagsLeftDisplay.textContent = `0${DEFAULTS[gameMode].numMines}`;
-    // for reset button, this will be a getOffset function that gets offset based on settings, then store it as a variable like below
     offset = DEFAULTS[gameMode].offset;
-    // create board in DOM based on value of offset (css sizing nightmare)
+    // create board in DOM based on value of offset (need to add styling to it as well)
     createBoard(offset);
-    // for reset button, this will be a createBoard function that will return the appropriate board, the save that as the board state variable shown below
     board = Array(offset * offset).fill(0);
-    // if number of mines are custom set by settings tab, use a separate customInit function instead of init/reset
+    // if number of mines are custom set by settings tab, use a separate customInit function instead of init
     numberOfMines = DEFAULTS[gameMode].numMines;
-    // numberOfMines = 1;
     setMines();
     setNumbers();
     setBlanks();
@@ -354,7 +352,7 @@ function getGameMode() {
 function createBoard(offsetValue) {
     // clear whatever might've already been in #board section
     boardEl.innerHTML = '';
-    // set properties of boardEl
+    // set grid properties of boardEl
     boardEl.style.gridTemplateColumns = `repeat(${offsetValue}, ${50 / offsetValue}vmin [col-start])`;
     boardEl.style.gridTemplateRows = `repeat(${offsetValue}, ${50 / offsetValue}vmin [row-start])`;
     // generate and place tiles in boardEl
@@ -367,6 +365,7 @@ function createBoard(offsetValue) {
         boardEl.appendChild(newTile);
     }
 }
+
 // Mines! 
 function getMineLocations() {
     let locationOfMines = Array(numberOfMines).fill('to be filled');
@@ -419,10 +418,11 @@ function setBlanks() {
         }
     });
 }
+
 // handleClickLeft gets location of click, parses, returns before render if necessary, and passes to render function
 function handleClickLeft(evt) {
     if (playerStatus === 'lost') return;
-    let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to be a number, not a string
+    let id = parseInt(evt.target.id); // since I use id in a comparison (see renderMine function), I need it to have a number data type, not a string
     if (board[id].flagged === 'yes') return;
     if (board[id].status === 'revealed') return;
     // cycle through board, if no tiles are revealed, set player status to playing, and start timer function
@@ -446,6 +446,7 @@ function timer() {
         smiley.setAttribute('src', 'images/smiley-loss.png');
     }
 }
+
 function handleClickRight(evt) {
     evt.preventDefault();
     if (playerStatus === 'lost') return false;
@@ -465,33 +466,11 @@ function handleClickRight(evt) {
     }
     return false;
 }
-// render
-function render(id) {
-    // change tile's background color when clicked
-    let tile = document.getElementById(`${id}`);
-    tile.classList.add('revealed');
-    tile.style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
-    switch (board[id].type) {
-        case 'mine':
-            renderMine(id, tile);
-            break;
-        case 'blank':
-            renderBlank(id);
-            break;
-        default:
-            // otherwise, write number inside div using innerHTML
-            board[id].status = 'revealed';
-            tile.style.color = COLORS[board[id].value];
-            tile.innerHTML = `${board[id].value}`;
-    }
-    // checkWinner has renderWinner inside of it
-    checkWinner();
-}
 function renderFlag(id) {
     document.getElementById(`${id}`).innerHTML = '<img class="flag-img" src="images/flag-img.png" alt="flag">';
     // update flags left display
     let oldNum = parseInt(flagsLeftDisplay.textContent);
-    // the following is an unorthodox way of using switch statements, but I preferred it to two else ifs
+    // the following is an unorthodox way of using switch statements, but I preferred it to using two else ifs
     switch (true) {
         case (oldNum > 100):
             flagsLeftDisplay.textContent = `${oldNum - 1}`;
@@ -534,12 +513,34 @@ function renderRemoveMark(id) {
     // update flagged property
     board[id].flagged = 'no';
 }
+
+// render
+function render(id) {
+    // change tile's background color when clicked
+    let tile = document.getElementById(`${id}`);
+    tile.classList.add('revealed');
+    switch (board[id].type) {
+        case 'mine':
+            renderMine(id, tile);
+            break;
+        case 'blank':
+            renderBlank(id);
+            break;
+        default:
+            // otherwise, write number inside div using innerHTML
+            board[id].status = 'revealed';
+            tile.style.color = COLORS[board[id].value];
+            tile.innerHTML = `${board[id].value}`;
+    }
+    // checkWinner has renderWinner inside of it
+    checkWinner();
+}
+
 function renderMine(id, tile) {
     clearInterval(nIntervId);
-    // change the clicked tile object's status from hidden to revealed
+    // change the clicked tile object's status from hidden to exploded
     board[id].status = 'exploded';
     tile.classList.add('turn-red');
-    // tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     // show location of all other hidden bombs (50% opacity)
     board.forEach(boardObj => {
@@ -551,8 +552,6 @@ function renderMine(id, tile) {
     playerStatus = 'lost';
 
     executeOrder66(id, tile);
-
-    // (do later) stop timer, change smiley, offer a play-a-new-game button
 }
 function executeOrder66(id, tile) {
     let top = [];
@@ -574,19 +573,15 @@ function executeOrder66(id, tile) {
     let hitTop = top.some(location => location === id);
     let hitBottom = bottom.some(location => location === id);
     let hitLeft = left.some(location => location === id);
-    let hitRight = right.some(location => location === id);
-
-    // setTimeout(() => document.getElementById(id).classList.remove('turn-red'), 100)
-    
+    let hitRight = right.some(location => location === id);    
     let bombIteration = 0;
     let upTiles = [];
     let downTiles = [];
     let leftTiles = [];
     let rightTiles = [];
-    recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
-    // debugger;
+    bombDetonation(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
 }
-function recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles) {
+function bombDetonation(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles) {
     setTimeout(() => {
         bombIteration += 1;
         if (upTiles.length > 0) upTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
@@ -639,14 +634,14 @@ function recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, 
         downTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
         leftTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
         rightTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
-        // update hitXXX conditions
+        // check and update hit-border conditions
         if (!hitTop) hitTop = top.some(location => location === upTiles[0]);
         if (!hitBottom) hitBottom = bottom.some(location => location === downTiles[0]);
         if (!hitLeft) hitLeft = left.some(location => location === leftTiles[0]);
         if (!hitRight) hitRight = right.some(location => location === rightTiles[0]);
         if (!hitTop || !hitBottom || !hitLeft || !hitRight) {
             // if any borders haven't been reached yet, run next bomb iteration!
-            recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
+            bombDetonation(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
         } else {
             upTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
             downTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
@@ -655,6 +650,7 @@ function recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, 
         }
     }, 50);
 }
+
 function renderBlank(id) {
     // initialize an array that holds blanks needing rendering
     let blanksNeedingRendering = [id];
@@ -664,7 +660,6 @@ function renderBlank(id) {
     while (blanksNeedingRendering.length) {
         // render first item in blanksNeedingRendering array
         let newBlank = blanksNeedingRendering[0];
-// console.log(newBlank);
         // change this blank tile's status from hidden to revealed
         board[newBlank].status = 'revealed';
         renderSingleBlank(newBlank);
@@ -674,15 +669,12 @@ function renderBlank(id) {
         findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered);
         // after rendering current blank and finding any renderable blanks nearby, remove current value from blanksNeedingRendering array
         blanksNeedingRendering.shift();
-// console.log(blanksNeedingRendering);            
     }
-// console.log(blanksAlreadyRendered);
 }
 function renderSingleBlank(id) {
     board[id].getValidNeighbors().forEach(location => {
         // display and change all valid touching tiles as revealed
         document.getElementById(`${location}`).classList.add('revealed');
-        document.getElementById(`${location}`).style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
         board[location].status = 'revealed';
         //  display number value in divs of all touching tiles that have a board value !== 0
         if (board[location].value !== 0) { // don't have to worry about mines as they will not be valid neighbors of a blank
@@ -724,6 +716,7 @@ function findMoreBlanks(blanksNeedingRendering, blanksAlreadyRendered) {
         });
     });
 }
+
 function checkWinner() {
     let revealedCount = 0;
     board.forEach(boardObj => {
@@ -754,6 +747,7 @@ function renderWinner() {
     // update winner variable
     playerStatus = 'won';
 }
+
 function newGame() {
     tiles.forEach(tile => {
         tile.innerHTML = '';
@@ -771,8 +765,7 @@ function newGame() {
 
 function seeBoard() {
     tiles.forEach(function(tile, idx) {
-        tile.style.backgroundColor = 'rgba(211, 211, 211, 1)';
-        tile.style.bborder = '0.2vmin solid rgba(105, 105, 105, 1)';
+        tile.classList.add('revealed');
         if (board[idx].type === 'mine') {
             tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
             tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
@@ -785,29 +778,12 @@ function seeBoard() {
 }
 console.log(board);
 
-// ******************
+// ******* SANDBOX ********
 
-//bug to fix, flag placed then clicked and revealed, can't remove flag...
-
-// notes:
-// -the id's ending in 1, 2, and 3 for the modes need to stay explictly defined and at the end of their id string for use in a javascript switch case, so don't touch those id's
-// -init will only work with default game modes, custom mines might need its own init functions
-
-// ******************
-
-// TO DO - check deliverables
-// add some win messaging
-// settings tab (if nothing else, don't do a dropdown, just put it directly on the screen)
-    // ^ could still style it to be as cool as a dropdown
-        // beginner, intermediate, expert (default# of mines and custom # mines in vertical radio), grayed out number box that activates with custom, reset button that lights up when changed from current gameMode
-// timer functionality
-// readme
-// styling
-// bomb propagate animation
-// stretch goal: learn how to do a dropdown with smooth animation and overlay for settings
+// stretch goals: learn how to do a dropdown with smooth animation and overlay for settings
 // sounds, and delayed chain detonation/shaking
 // customizable color themes
 // how-to-play tab that pulls up from below the minefield would be nice
 // have the number input have a horizontal scroll bar that drops down that can quickly set the number of mines between 1-575
-// AI opponent to race against?!?!?!?! or rng friend?  activate drone!
+// AI opponent to race against?!?!?!?! or rng friend?  activatable drone?!
 // end of page

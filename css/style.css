@@ -12,6 +12,7 @@ body {
     background-color: rgba(150, 150, 150, 1);
     min-width: 245px;
 }
+
 h1 {
     font-size: calc(5px + 3vmin);
     margin: 2vh 0 0;
@@ -36,6 +37,7 @@ h1>div>img {
     height: calc(5px + 3vmin);
     opacity: 0.6;
 }
+
 .container {
     display: flex;
     flex-direction: column;
@@ -44,6 +46,7 @@ h1>div>img {
     border-radius: 0 0 2vmin 2vmin;
     padding: 0 0 12vmin;
 }
+
 .settings-bar {
     display: flex;
     align-items: center;
@@ -189,6 +192,7 @@ input[type=number]::-webkit-outer-spin-button {
 .set-custom-board:active {
     opacity: 0.6;
 }
+
 .status-bar {
     display: flex;
     justify-content: space-evenly;
@@ -224,6 +228,7 @@ input[type=number]::-webkit-outer-spin-button {
 .smiley:hover {
     border: 0.5vmin inset rgba(105, 105, 105, 0.75);
 }
+
 .board {
     display: grid;
     border: 0.1vmin solid rgba(105, 105, 105, 1);
@@ -241,6 +246,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 .tile.revealed {
     background-color: rgba(211, 211, 211, 1);
+    border: 0.2vmin solid rgba(105, 105, 105, 1);
 }
 .tile.turn-red {
     background-color: rgba(255, 0, 0, 1);
@@ -260,6 +266,7 @@ input[type=number]::-webkit-outer-spin-button {
 .flag-img {
     height: 70%;
 }
+
 div.win-message {
     background-color: rgba(0, 0, 0, 0.75);
     position: absolute;
