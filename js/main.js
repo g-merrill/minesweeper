@@ -27,7 +27,7 @@ const DEFAULTS = {
 // classes
 class Tile {
     constructor(location) {
-        // location references both the dom id and the array id
+        // location references both the dom element id and the board array id
         this.location = location;
         this.status = 'hidden';
         this.flagged = 'no';
@@ -539,7 +539,6 @@ function renderMine(id, tile) {
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'exploded';
     tile.classList.add('turn-red');
-    console.log(tile);
     // tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     // show location of all other hidden bombs (50% opacity)
@@ -556,14 +555,9 @@ function renderMine(id, tile) {
     // (do later) stop timer, change smiley, offer a play-a-new-game button
 }
 function executeOrder66(id, tile) {
-    let corner = [0, offset - 1, offset * (offset - 1), offset * offset - 1];
     let top = [];
     for (let i = 0; i < offset; i++) {
         top.push(i);
-    }
-    let right = [];
-    for (let i = 0; i < offset; i++) {
-        right.push((i + 1) * offset - 1);
     }
     let bottom = [];
     for (let i = 0; i < offset; i++) {
@@ -573,105 +567,93 @@ function executeOrder66(id, tile) {
     for (let i = 0; i < offset; i++) {
         left.push(i * offset);
     }
-    let hitCorner = corner.some(location => location === id)
+    let right = [];
+    for (let i = 0; i < offset; i++) {
+        right.push((i + 1) * offset - 1);
+    }
     let hitTop = top.some(location => location === id);
-    let hitRight = right.some(location => location === id);
     let hitBottom = bottom.some(location => location === id);
     let hitLeft = left.some(location => location === id);
-    // console.log(hitCorner, hitTop, hitRight, hitBottom, hitLeft);
+    let hitRight = right.some(location => location === id);
 
-    let ringOne, ringTwo, ringThree;
+    // setTimeout(() => document.getElementById(id).classList.remove('turn-red'), 100)
+    
+    let bombIteration = 0;
+    let upTiles = [];
+    let downTiles = [];
+    let leftTiles = [];
+    let rightTiles = [];
+    recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
+    // debugger;
+}
+function recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles) {
     setTimeout(() => {
-        // clear exploded tile
-        document.getElementById(id).classList.remove('turn-red');
-        
-        // turn the tiles around red
-        let bombIteration = 1;
+        bombIteration += 1;
+        if (upTiles.length > 0) upTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+        if (downTiles.length > 0) downTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+        if (leftTiles.length > 0) leftTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+        if (rightTiles.length > 0) rightTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+        // find tiles in each direction
         // up
-        let upTiles = [];
+        upTiles = [];
         if (!hitTop) {
-            for (i = -bombIteration; i < 2 * bombIteration; i++) {
-                upTiles.push(id - offset + i);
+            for (i = -bombIteration; i < bombIteration + 1; i++) {
+                upTiles.push(id - (offset * bombIteration) + i);
             }
             // remove any that may have crossed from right/left
-            if (hitLeft) upTiles.splice(0, 1);
-            if (hitRight) upTiles.splice(2 * bombIteration, 1);
+            if (hitLeft) upTiles = upTiles.filter(value => value >= (Math.floor(id / offset) - bombIteration) * offset);
+            if (hitRight) upTiles = upTiles.filter(value => value < (Math.floor(id / offset) - bombIteration + 1) * offset);
         }
         // down
-        let downTiles = [];
+        downTiles = [];
         if (!hitBottom) {
-            for (i = -bombIteration; i < 2 * bombIteration; i++) {
-                downTiles.push(id + offset + i);
+            for (i = -bombIteration; i < bombIteration + 1; i++) {
+                downTiles.push(id + (offset * bombIteration) + i);
             }
             // remove any that may have crossed from right/left
-            if (hitLeft) downTiles.splice(0, 1);
-            if (hitRight) downTiles.splice(2 * bombIteration, 1);
+            if (hitLeft) downTiles = downTiles.filter(value => value >= (Math.floor(id / offset) + bombIteration) * offset);
+            if (hitRight) downTiles = downTiles.filter(value => value < (Math.floor(id / offset) + bombIteration + 1) * offset);
         }
-        console.log(upTiles, downTiles);
         // left
-        let leftTiles = [];
+        leftTiles = [];
         if (!hitLeft) {
-            for (i = -bombIteration; i < 2 * bombIteration; i++) {
-                leftTiles.push(id - bombIteration + i * offset);
+            for (i = -bombIteration; i < bombIteration + 1; i++) {
+                leftTiles.push(id - bombIteration + (offset * i));
             }
             // remove any that may have gone outside of array bounds
-            if (hitTop) upTiles.splice(0, 1);
-            if (hitBottom) upTiles.splice(2 * bombIteration, 1);
+            if (hitTop) leftTiles = leftTiles.filter(value => value >= 0);
+            if (hitBottom) leftTiles = leftTiles.filter(value => value < offset * offset);
         }
-
-
-        
+        // right
+        rightTiles = [];
+        if (!hitRight) {
+            for (i = -bombIteration; i < bombIteration + 1; i++) {
+                rightTiles.push(id + bombIteration + (offset * i));
+            }
+            // remove any that may have gone outside of array bounds
+            if (hitTop) rightTiles = rightTiles.filter(value => value >= 0);
+            if (hitBottom) rightTiles = rightTiles.filter(value => value < offset * offset);
+        }
+        // render tiles to be red
+        upTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
+        downTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
+        leftTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
+        rightTiles.forEach(location => document.getElementById(location).classList.add('turn-red'));
         // update hitXXX conditions
-        // ensure that tile directional arrays are re-emptied on next go-around
-
-
-        
-        ringOne = board[id].neighbors;
-        ringOne.forEach(location => {
-            document.getElementById(location).classList.add('turn-red');
-        });
-        setTimeout(() => {
-            // go up
-            let hitRightBoundary = false;
-            let hitLeftBoundary = false;
-            let topRingTwoValid = [];
-            let topRingTwo = [];
-            if (id >= offset * 2) {
-                topRingTwoValid = ringOne.filter(location => {
-                    return location < id - offset + 2;
-                });
-                topRingTwo.push(id - offset * 2);
-            }
-            if (topRingTwoValid.length === 3) {
-                topRingTwo.push(id - offset * 2 - 1);
-                topRingTwo.push(id - offset * 2 + 1);
-                (id - offset + 2) % offset !== 0 ? topRingTwo.push(id - offset * 2 + 2) : hitRightBoundary = true;
-                (id - offset - 1) % offset !== 0 ? topRingTwo.push(id - offset * 2 - 2) : hitLeftBoundary = true;
-            } else if (topRingTwoValid.length === 2) {
-                if (id % offset === 0) {
-                    topRingTwo.push(id - offset * 2 + 1);
-                    topRingTwo.push(id - offset * 2 + 2);
-                    hitLeftBoundary = true;
-                } else {
-                    topRingTwo.push(id - offset * 2 - 1);
-                    topRingTwo.push(id - offset * 2 - 2);
-                    hitRightBoundary = true;
-                } 
-            }
-            ringOne.forEach(location => {
-                document.getElementById(location).classList.remove('turn-red');
-            });
-            topRingTwo.forEach(location => document.getElementById(`${location}`).classList.add('turn-red'));
-
-            // go right
-            let rightRingOne
-            // go down
-            let bottomRingOne
-            // go left
-            let leftRingOne
-    
-        }, 100);
-    }, 100);
+        if (!hitTop) hitTop = top.some(location => location === upTiles[0]);
+        if (!hitBottom) hitBottom = bottom.some(location => location === downTiles[0]);
+        if (!hitLeft) hitLeft = left.some(location => location === leftTiles[0]);
+        if (!hitRight) hitRight = right.some(location => location === rightTiles[0]);
+        if (!hitTop || !hitBottom || !hitLeft || !hitRight) {
+            // if any borders haven't been reached yet, run next bomb iteration!
+            recursiveFun(id, top, bottom, left, right, hitTop, hitBottom, hitLeft, hitRight, bombIteration, upTiles, downTiles, leftTiles, rightTiles);
+        } else {
+            upTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+            downTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+            leftTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+            rightTiles.forEach(location => document.getElementById(location).classList.remove('turn-red'));
+        }
+    }, 50);
 }
 function renderBlank(id) {
     // initialize an array that holds blanks needing rendering

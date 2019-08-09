@@ -154,6 +154,7 @@ h1>div>img {
     border: 0.5vmin solid rgba(0, 0, 0, 0);
     border-radius: 1vmin;
     background-color: rgba(38, 38, 38, 1);
+    text-align: center;
     margin: 0 0 0 2%;
     pointer-events: none;
 }
@@ -161,7 +162,6 @@ h1>div>img {
     border: 0.5vmin solid rgba(211, 211, 211, 1);
     background-color: rgba(0, 0, 0, 0);
     color: rgba(211, 211, 211, 1);
-    text-align: center;
     pointer-events: fill;
 }
 .num-mines-input.activated.error {
