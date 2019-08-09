@@ -31,19 +31,7 @@ class Tile {
         this.location = location;
         this.status = 'hidden';
         this.flagged = 'no';
-    }
-}
-class Mine extends Tile {
-    constructor(location) {
-        super(location);
-        this.type = 'mine';
-    }
-}
-class Number extends Tile {
-    constructor(location) {
-        super(location);
-        this.value = this.checkForMines(this.getValidNeighbors());
-        this.type = 'number';
+        this.neighbors = this.getValidNeighbors();
     }
     getValidNeighbors() {
         // function that returns the actual number of tiles this tile is touching
@@ -151,6 +139,19 @@ class Number extends Tile {
             ];
         }
         return validNeighbors;
+    }
+}
+class Mine extends Tile {
+    constructor(location) {
+        super(location);
+        this.type = 'mine';
+    }
+}
+class Number extends Tile {
+    constructor(location) {
+        super(location);
+        this.value = this.checkForMines(this.neighbors);
+        this.type = 'number';
     }
     checkForMines(validNeighbors) {
         let minesNearby = 0;
@@ -274,7 +275,6 @@ function customBoardClick() {
         return;
     };
     let customNumberOfMines = parseInt(customValue);
-    console.log(customNumberOfMines, typeof customNumberOfMines);
     // what should happen if placemines btn is clicked!
     customInit(customNumberOfMines);
 }
@@ -299,7 +299,7 @@ function customValueCheck(val) {
 }
 function customInit(minesAmount) {
     smiley.setAttribute('src', 'images/smiley.png');
-    window.clearInterval(nIntervId);
+    clearInterval(nIntervId);
     timerDisplay.textContent = '000';
     playerStatus = 'pregame';
     getGameMode();
@@ -317,7 +317,7 @@ function customInit(minesAmount) {
 init();
 function init() {
     smiley.setAttribute('src', 'images/smiley.png');
-    window.clearInterval(nIntervId);
+    clearInterval(nIntervId);
     timerDisplay.textContent = '000';
     playerStatus = 'pregame';  // won, lost, pregame, or playing(used when timer function is set up)
     getGameMode();
@@ -429,7 +429,7 @@ function handleClickLeft(evt) {
     if (board.every(boardObj => boardObj.status === 'hidden')) {
         playerStatus = 'playing';
         timeCount = 0;
-        nIntervId = window.setInterval(timer, 1000);
+        nIntervId = setInterval(timer, 1000);
     }
     render(id);
 }
@@ -469,7 +469,7 @@ function handleClickRight(evt) {
 function render(id) {
     // change tile's background color when clicked
     let tile = document.getElementById(`${id}`);
-    tile.style.backgroundColor = 'rgba(211, 211, 211, 1)';
+    tile.classList.add('revealed');
     tile.style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
     switch (board[id].type) {
         case 'mine':
@@ -535,10 +535,12 @@ function renderRemoveMark(id) {
     board[id].flagged = 'no';
 }
 function renderMine(id, tile) {
-    window.clearInterval(nIntervId);
+    clearInterval(nIntervId);
     // change the clicked tile object's status from hidden to revealed
     board[id].status = 'exploded';
-    tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
+    tile.classList.add('turn-red');
+    console.log(tile);
+    // tile.style.backgroundColor = 'rgba(255, 0, 0, 1)';
     tile.innerHTML = '<img class="mine-img" src="images/mine-img.png" alt="mine">';
     // show location of all other hidden bombs (50% opacity)
     board.forEach(boardObj => {
@@ -548,7 +550,128 @@ function renderMine(id, tile) {
     });
     smiley.setAttribute('src', 'images/smiley-loss.png');
     playerStatus = 'lost';
+
+    executeOrder66(id, tile);
+
     // (do later) stop timer, change smiley, offer a play-a-new-game button
+}
+function executeOrder66(id, tile) {
+    let corner = [0, offset - 1, offset * (offset - 1), offset * offset - 1];
+    let top = [];
+    for (let i = 0; i < offset; i++) {
+        top.push(i);
+    }
+    let right = [];
+    for (let i = 0; i < offset; i++) {
+        right.push((i + 1) * offset - 1);
+    }
+    let bottom = [];
+    for (let i = 0; i < offset; i++) {
+        bottom.push(offset * (offset - 1) + i);
+    }
+    let left = [];
+    for (let i = 0; i < offset; i++) {
+        left.push(i * offset);
+    }
+    let hitCorner = corner.some(location => location === id)
+    let hitTop = top.some(location => location === id);
+    let hitRight = right.some(location => location === id);
+    let hitBottom = bottom.some(location => location === id);
+    let hitLeft = left.some(location => location === id);
+    // console.log(hitCorner, hitTop, hitRight, hitBottom, hitLeft);
+
+    let ringOne, ringTwo, ringThree;
+    setTimeout(() => {
+        // clear exploded tile
+        document.getElementById(id).classList.remove('turn-red');
+        
+        // turn the tiles around red
+        let bombIteration = 1;
+        // up
+        let upTiles = [];
+        if (!hitTop) {
+            for (i = -bombIteration; i < 2 * bombIteration; i++) {
+                upTiles.push(id - offset + i);
+            }
+            // remove any that may have crossed from right/left
+            if (hitLeft) upTiles.splice(0, 1);
+            if (hitRight) upTiles.splice(2 * bombIteration, 1);
+        }
+        // down
+        let downTiles = [];
+        if (!hitBottom) {
+            for (i = -bombIteration; i < 2 * bombIteration; i++) {
+                downTiles.push(id + offset + i);
+            }
+            // remove any that may have crossed from right/left
+            if (hitLeft) downTiles.splice(0, 1);
+            if (hitRight) downTiles.splice(2 * bombIteration, 1);
+        }
+        console.log(upTiles, downTiles);
+        // left
+        let leftTiles = [];
+        if (!hitLeft) {
+            for (i = -bombIteration; i < 2 * bombIteration; i++) {
+                leftTiles.push(id - bombIteration + i * offset);
+            }
+            // remove any that may have gone outside of array bounds
+            if (hitTop) upTiles.splice(0, 1);
+            if (hitBottom) upTiles.splice(2 * bombIteration, 1);
+        }
+
+
+        
+        // update hitXXX conditions
+        // ensure that tile directional arrays are re-emptied on next go-around
+
+
+        
+        ringOne = board[id].neighbors;
+        ringOne.forEach(location => {
+            document.getElementById(location).classList.add('turn-red');
+        });
+        setTimeout(() => {
+            // go up
+            let hitRightBoundary = false;
+            let hitLeftBoundary = false;
+            let topRingTwoValid = [];
+            let topRingTwo = [];
+            if (id >= offset * 2) {
+                topRingTwoValid = ringOne.filter(location => {
+                    return location < id - offset + 2;
+                });
+                topRingTwo.push(id - offset * 2);
+            }
+            if (topRingTwoValid.length === 3) {
+                topRingTwo.push(id - offset * 2 - 1);
+                topRingTwo.push(id - offset * 2 + 1);
+                (id - offset + 2) % offset !== 0 ? topRingTwo.push(id - offset * 2 + 2) : hitRightBoundary = true;
+                (id - offset - 1) % offset !== 0 ? topRingTwo.push(id - offset * 2 - 2) : hitLeftBoundary = true;
+            } else if (topRingTwoValid.length === 2) {
+                if (id % offset === 0) {
+                    topRingTwo.push(id - offset * 2 + 1);
+                    topRingTwo.push(id - offset * 2 + 2);
+                    hitLeftBoundary = true;
+                } else {
+                    topRingTwo.push(id - offset * 2 - 1);
+                    topRingTwo.push(id - offset * 2 - 2);
+                    hitRightBoundary = true;
+                } 
+            }
+            ringOne.forEach(location => {
+                document.getElementById(location).classList.remove('turn-red');
+            });
+            topRingTwo.forEach(location => document.getElementById(`${location}`).classList.add('turn-red'));
+
+            // go right
+            let rightRingOne
+            // go down
+            let bottomRingOne
+            // go left
+            let leftRingOne
+    
+        }, 100);
+    }, 100);
 }
 function renderBlank(id) {
     // initialize an array that holds blanks needing rendering
@@ -576,7 +699,7 @@ function renderBlank(id) {
 function renderSingleBlank(id) {
     board[id].getValidNeighbors().forEach(location => {
         // display and change all valid touching tiles as revealed
-        document.getElementById(`${location}`).style.backgroundColor = 'rgba(211, 211, 211, 1)';
+        document.getElementById(`${location}`).classList.add('revealed');
         document.getElementById(`${location}`).style.border = '0.2vmin solid rgba(105, 105, 105, 1)';
         board[location].status = 'revealed';
         //  display number value in divs of all touching tiles that have a board value !== 0
@@ -629,7 +752,7 @@ function checkWinner() {
     }
 }
 function renderWinner() {
-    window.clearInterval(nIntervId);
+    clearInterval(nIntervId);
     // find any unflagged, hidden mine tiles and put flags on them!
     let toAutoFlag = board.filter(boardObj => {
         return (boardObj.flagged !== 'yes' && boardObj.type === 'mine');
